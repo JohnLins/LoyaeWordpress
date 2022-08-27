@@ -19,6 +19,85 @@ $GLOBALS['pages'] = get_pages();
  function my_menu() {
      add_menu_page('Loyae Admin', 'Loyae', 'manage_options', 'my-page-slug', 'loyae_admin_page'/*, 'https://www.loyae.com/assets/logos/logo.svg'*/, null);
  }
+
+ class Diagnostic {
+    public $number_of_imgs;
+    public $num_of_imgs_with_alt;
+    public $is_meta_description;
+    public $number_of_meta_keywords;
+    public $number_of_og_meta;
+    public $number_of_meta;
+    
+ }
+
+ function local_diagnostic($id){
+    $output = new Diagnostic();
+
+    $res = get_post($id);
+    $res = '
+    <head>
+    <meta name="description" content="Free Web tutorials">
+<meta name="og:title" content="gdd">
+    </head>
+    <body>
+    <div><img src="https://i0.wp.com/www.hadeninteractive.com/wp-content/uploads/2016/11/natureornurture1.png?w=480&ssl=1"/></div><img src="https://sourceforge.net/sflogo.php?type=16&group_id=218559" alt="stuff"/>
+    </body>
+    ';
+    $dom = new DomDocument();
+    @ $dom->loadHTML($res);
+    //DOMElement
+    $images = $dom->getElementsByTagName("img");
+
+    // echo $images->item(0)->attributes->getNamedItem("src")->value . "<br/><br/>";
+    // echo $images->item(1)->attributes->getNamedItem("src")->value . "<br/><br/>";
+
+    //Number of images
+    $output->number_of_imgs = count($images);
+
+    $output->num_of_imgs_with_alt = 0;
+    for ($i = 0; $i < $output->number_of_imgs; $i++){
+      if($images->item($i)->attributes->getNamedItem("alt")->value){
+        $output->num_of_imgs_with_alt++;
+      }
+    }
+
+
+    
+    $metas = $dom->getElementsByTagName("meta");
+
+    $output->is_meta_description = false;
+    $output->number_of_meta_keywords = 0;
+    $output->number_of_og_meta = 0;
+
+    for ($i = 0; $i < count($metas); $i++){
+        $temp = $metas->item($i)->attributes->getNamedItem("name")->value;
+
+        if($temp == "description"){$output->is_meta_description = true;}
+        if($temp == "keywords"){
+            //explode(',', $myString);
+            $output->number_of_meta_keywords = substr_count($meta->item(i)->attributes->getNamedItem("content"), ",");
+        }
+        if(substr($temp, 0, 3) == "og:"){$output->number_of_og_meta++;}
+
+
+    }
+
+    
+    //number of meta tags
+    $output->number_of_meta = count($metas);
+
+
+
+
+//update_post_meta($attach_id, '_wp_attachment_image_alt', $alt);
+// $attach_id: it is the image post id.
+
+// $alt: the content of image alt text.
+
+// If _wp_attachment_image_alt meta data does not exist, it will be created. Otherwise, it will be updated.
+    return $output;
+
+ }
  
  function loyae_admin_page() {
         echo '<div><img src="https://www.loyae.com/assets/logos/logo.svg" height="30px;" style="display:inline-block;"/> <h1 style="display:inline-block;">Loyae!</h1><br/><hr/></div>';
@@ -32,10 +111,10 @@ $GLOBALS['pages'] = get_pages();
         <tr>
         <th>Post</th>
         <th>Diagnostic (Free)</th>
-        <!--<th>Optimize Alt <br/>{AI}</th>-->
+        <th>Optimize Alt <br/>{AI}</th>
         <th>Optimize Meta <br/>(Description)<br/>{AI}</th>
         <th>Optimize Meta <br/>(keywords)<br/>{AI}</th>
-        <th>Optimize OG Meta Tags</th>
+        <th>Optimize Open Graph Meta Tags</th>
         <th>Optimize Essential Tags</th>
         <th>Optimize 3rd-party Tags (Non-Essential)</th>
         <!--<th>Compress</th>-->
@@ -49,16 +128,18 @@ $GLOBALS['pages'] = get_pages();
         if( ! empty( $GLOBALS['posts'] ) ){
             
             for($i = 0; $i < count($GLOBALS['posts']); $i++){
-                $class = '';
-                if($i % 2 == 0){ $class = 'even';}else {$class = 'odd';}
-                $post_table .= '<tr class="'. $class .'">
+                $class = ''; if($i % 2 == 0){ $class = 'even';}else {$class = 'odd';}
+
+                    $temp_local_diagnostic = local_diagnostic(($GLOBALS['posts'])[$i]->ID);
+
+                            $post_table .= '<tr class="'. $class .'">
                             <td><a href="' . get_permalink( ($GLOBALS['posts'])[$i]->ID ) . '">' 
                             . ($GLOBALS['posts'])[$i]->post_title . '</a></td>
                             <td><a href="javascript:diagnose('.$GLOBALS['posts'][$i]->ID.')">🔍</a></td>
-                            <td><input type="checkbox"/><span style="color:red">(9 missing)</span></td>
-                           <!-- <td><input type="checkbox"/>(1 missing)</td>-->
+                            <td><input type="checkbox"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
+                           <td><input type="checkbox"/>(1 missing)</td>
                             <td><input type="checkbox"/>(4 remaining)</td>
-                            <td><input type="checkbox"/>(3 missing)</td>
+                            <td><input type="checkbox"/>('.(4-$temp_local_diagnostic->number_of_og_meta).' missing)</td>
                             <td><!--<input type="checkbox"/>--><span style="color:green">(0 missing)</span></td>
                             <td><input type="checkbox"/>(43 missing)</td>
                             <!--<td><input type="checkbox"/>(50 bytes-to-remove)</td>-->
