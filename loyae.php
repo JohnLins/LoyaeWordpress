@@ -33,7 +33,8 @@ $GLOBALS['pages'] = get_pages();
  function local_diagnostic($id){
     $output = new Diagnostic();
 
-    $res = get_post($id);
+    $res = get_post($id); //returns the WP_post class whih contains stuff like the post data, author, ect (things you can out in meta tags): https://developer.wordpress.org/reference/classes/wp_post/
+    //echo $res;
     $res = '
     <head>
     <meta name="description" content="Free Web tutorials">
@@ -56,7 +57,9 @@ $GLOBALS['pages'] = get_pages();
 
     $output->num_of_imgs_with_alt = 0;
     for ($i = 0; $i < $output->number_of_imgs; $i++){
-      if($images->item($i)->attributes->getNamedItem("alt")->value){
+        
+      if($images->item($i)->attributes->getNamedItem("alt") /*&& ->value*/){
+        echo $images->item($i)->attributes->getNamedItem("alt")->value;
         $output->num_of_imgs_with_alt++;
       }
     }
@@ -104,7 +107,7 @@ $GLOBALS['pages'] = get_pages();
      
 
         //latest 20 posts, not quite working yet
-        $post_table = '<center><div class="table-container"><table>
+        $post_table = '<form method="post"><center><div class="table-container"><table>
         <table class="timecard">
         <caption>Posts</caption>
         <thread>
@@ -123,7 +126,7 @@ $GLOBALS['pages'] = get_pages();
         </thread>
         
 
-        <form method="post">';
+        ';
 
         if( ! empty( $GLOBALS['posts'] ) ){
             
@@ -137,7 +140,7 @@ $GLOBALS['pages'] = get_pages();
                             . ($GLOBALS['posts'])[$i]->post_title . '</a></td>
                             <td><a href="javascript:diagnose('.$GLOBALS['posts'][$i]->ID.')">🔍</a></td>
                             <td><input type="checkbox"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
-                           <td><input type="checkbox"/>(1 missing)</td>
+                           <td>'. ($temp_local_diagnostic->is_meta_description ? '<span style="color: green;">None Missing</span>'  : '<input type="checkbox"/> <span style="color: red;">Missing</span>') .'</td>
                             <td><input type="checkbox"/>(4 remaining)</td>
                             <td><input type="checkbox"/>('.(4-$temp_local_diagnostic->number_of_og_meta).' missing)</td>
                             <td><!--<input type="checkbox"/>--><span style="color:green">(0 missing)</span></td>
@@ -145,27 +148,79 @@ $GLOBALS['pages'] = get_pages();
                             <!--<td><input type="checkbox"/>(50 bytes-to-remove)</td>-->
                             </tr>';
             }
-            $post_table .= '</table></div></center>
-            <script>
-            
-            function diagnose(id){
-                window.alert(id);
-            }
-            
-            </script>
-            ';
+            $post_table .= '</table></div></center> </br></br></br>';
             
         }
+
+        if( ! empty( $GLOBALS['pages'] ) ){
+            $post_table .= '<center><div class="table-container"><table>
+            <table class="timecard">
+            <caption>Pages</caption>
+            <thread>
+            <tr>
+            <th>Post</th>
+            <th>Diagnostic (Free)</th>
+            <th>Optimize Alt <br/>{AI}</th>
+            <th>Optimize Meta <br/>(Description)<br/>{AI}</th>
+            <th>Optimize Meta <br/>(keywords)<br/>{AI}</th>
+            <th>Optimize Open Graph Meta Tags</th>
+            <th>Optimize Essential Tags</th>
+            <th>Optimize 3rd-party Tags (Non-Essential)</th>
+            <!--<th>Compress</th>-->
+            
+            </tr>
+            </thread> ';
+
+
+        
+
+        for($i = 0; $i < count($GLOBALS['pages']); $i++){
+            $class = ''; if($i % 2 == 0){ $class = 'even';}else {$class = 'odd';}
+
+                $temp_local_diagnostic = local_diagnostic(($GLOBALS['pages'])[$i]->ID);
+
+                        $post_table .= '<tr class="'. $class .'">
+                        <td><a href="' . get_permalink( ($GLOBALS['pages'])[$i]->ID ) . '">' 
+                        . ($GLOBALS['pages'])[$i]->post_title . '</a></td>
+                        <td><a href="javascript:diagnose('.$GLOBALS['posts'][$i]->ID.')">🔍</a></td>
+                        <td><input type="checkbox"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
+                       <td>'. ($temp_local_diagnostic->is_meta_description ? '<span style="color: green;">None Missing</span>'  : '<input type="checkbox"/> <span style="color: red;">Missing</span>') .'</td>
+                        <td><input type="checkbox"/>(4 remaining)</td>
+                        <td><input type="checkbox"/>('.(4-$temp_local_diagnostic->number_of_og_meta).' missing)</td>
+                        <td><!--<input type="checkbox"/>--><span style="color:green">(0 missing)</span></td>
+                        <td><input type="checkbox"/>(43 missing)</td>
+                        <!--<td><input type="checkbox"/>(50 bytes-to-remove)</td>-->
+                        </tr>';
+        }
+        $post_table .= '</table></div></center>
+        </form>';
+    }
+        //echo '<br/><br/>PAGES: <br/><br/>';
+        //for($i = 0; $i < count($GLOBALS['pages']); $i++){
+        //echo json_encode($GLOBALS['pages'][$i]->post_name) . '</br>';
+        //}
+
+        $post_table .= '<script>
+            
+        function diagnose(id){
+            window.alert(id);
+        }
+        
+        </script>';
+
+
     echo $post_table;
+
+
+
+
+    
 
     echo '<br/><center>
     <input type="submit" name="optimize" class="button" value="optimize" />
     </center></form>';
 
-    echo '<br/><br/>PAGES: <br/><br/>';
-    for($i = 0; $i < count($GLOBALS['pages']); $i++){
-    echo json_encode($GLOBALS['pages'][$i]->post_name) . '</br>';
-    }
+    
 
 
     //css
@@ -261,15 +316,26 @@ $GLOBALS['pages'] = get_pages();
  class GeneratedMeta {
     public $keywords;
     public $description;
+    public $author;
+    public $date;
+    public $title;
  }
 
  // add_post_meta( $GLOBALS['posts'][0], 'description', 'Loyae Meta Des', false);
 
-function get_generated_meta($text){
+function get_generated_meta($text, $id){
     //put into meta API
     $meta = new GeneratedMeta();
+
+    //RUN IT THROUGH THE API HERE
+    $post_class = get_post($id);
+
     $meta->keywords = "abc, bca, cab";
-    $meta->description = "abcdefg3";
+    $meta->description = 'abcdefg3'.$text;
+    $meta->author = $post_class->post_author;
+    $meta->date = $post_class->post_date;
+    $meta->title = $post_class->post_title;
+
     return $meta;
 }
 
@@ -279,10 +345,25 @@ function get_generated_meta($text){
     //if you don't specify an ID, it updates all posts
         if(is_single($id) or $id == null){
 
-            $meta = get_generated_meta($id);
+            $meta = get_generated_meta($post_text, $id);
 
             echo '<meta name="description" content="' . $meta->description . '" />' . "\n";
             echo '<meta name="keywords" content="' . $meta->keywords . '" />' . "\n";
+            echo '<meta name="article:published_time" content="' . $meta->date . '" />' . "\n";
+            echo '<meta name="article:author" content="' . $meta->author . '" />' . "\n";
+            echo '<title>' . $meta->title . '</title>' . "\n";
+            
+            /*
+            <meta property="article:published_time" content="2019-05-12 10:00" />
+<meta property="article:modified_time" content="2019-09-18 18:00" />
+<meta property="article:expiration_time" content="2119-05-12 10:00" /> 
+<meta property="article:author" content="Shark" />
+<meta property="article:publisher" content="https://www.facebook.com/SharkCoder" />
+<meta property="article:section" content="HTML" />
+<meta property="article:tag" content="tag1, tag2" />
+<meta property="article:tag" content="tag3" />
+*/
+
         }
    
     }
@@ -296,12 +377,12 @@ function get_generated_meta($text){
     if(array_key_exists('optimize', $_POST)) {
         echo ':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::' . date('Y-m-d H:i:s');
         
-      
+        
     }
+
 
 add_action( 'wp_head', 'loyae_add_meta_tag');
 add_action('wp_body_open', 'loyae_add_body_data');
-
 
 //   update_post_meta()
 
