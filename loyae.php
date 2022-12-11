@@ -33,9 +33,9 @@ $GLOBALS['pages'] = get_pages();
  function local_diagnostic($id){
     $output = new Diagnostic();
 
-    $res = get_post($id); //returns the WP_post class whih contains stuff like the post data, author, ect (things you can out in meta tags): https://developer.wordpress.org/reference/classes/wp_post/
+    //returns the WP_post class whih contains stuff like the post data, author, ect (things you can out in meta tags): https://developer.wordpress.org/reference/classes/wp_post/
     //echo $res;
-    $res = '
+    /*$res = '
     <head>
     <meta name="description" content="Free Web tutorials">
 <meta name="og:title" content="gdd">
@@ -43,7 +43,9 @@ $GLOBALS['pages'] = get_pages();
     <body>
     <div><img src="https://i0.wp.com/www.hadeninteractive.com/wp-content/uploads/2016/11/natureornurture1.png?w=480&ssl=1"/></div><img src="https://sourceforge.net/sflogo.php?type=16&group_id=218559" alt="stuff"/>
     </body>
-    ';
+    ';*/
+    $res = get_post($id)->post_content;
+//echo $res;
     $dom = new DomDocument();
     @ $dom->loadHTML($res);
     //DOMElement
