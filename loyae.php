@@ -6,6 +6,8 @@
  * Author:            Lins Technologies
  */
 
+ 
+
 $args = array(
     'numberposts'	=> 20,
     'category'		=> 0
@@ -61,7 +63,7 @@ $GLOBALS['pages'] = get_pages();
     for ($i = 0; $i < $output->number_of_imgs; $i++){
         
       if($images->item($i)->attributes->getNamedItem("alt") /*&& ->value*/){
-        echo $images->item($i)->attributes->getNamedItem("alt")->value;
+        //echo $images->item($i)->attributes->getNamedItem("alt")->value;
         $output->num_of_imgs_with_alt++;
       }
     }
@@ -105,11 +107,16 @@ $GLOBALS['pages'] = get_pages();
  }
  
  function loyae_admin_page() {
-        echo '<div><img src="https://www.loyae.com/assets/logos/logo.svg" height="30px;" style="display:inline-block;"/> <h1 style="display:inline-block;">Loyae!</h1><br/><hr/></div>';
-     
+
+   echo '<br/><div><center>
+    <img src="https://www.loyae.com/assets/logos/logo.svg" height="20px;"/> 
+    <h1 style="display:inline-block;">Loyae</h1><br/>
+    <br/><hr/><br/>
+    </center></div>';
+
 
         //latest 20 posts, not quite working yet
-        $post_table = '<form method="post"><center><div class="table-container"><table>
+        $post_table = '<form action="loyae.php" method="post"><center><div class="table-container"><table>
         <table class="timecard">
         <caption>Posts</caption>
         <thread>
@@ -141,7 +148,7 @@ $GLOBALS['pages'] = get_pages();
                             <td><a href="' . get_permalink( ($GLOBALS['posts'])[$i]->ID ) . '">' 
                             . ($GLOBALS['posts'])[$i]->post_title . '</a></td>
                             <td><a href="javascript:diagnose('.$GLOBALS['posts'][$i]->ID.')">🔍</a></td>
-                            <td><input type="checkbox"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
+                            <td><input type="checkbox" name="check_alt"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
                            <td>'. ($temp_local_diagnostic->is_meta_description ? '<span style="color: green;">None Missing</span>'  : '<input type="checkbox"/> <span style="color: red;">Missing</span>') .'</td>
                             <td><input type="checkbox"/>(4 remaining)</td>
                             <td><input type="checkbox"/>('.(4-$temp_local_diagnostic->number_of_og_meta).' missing)</td>
@@ -194,8 +201,7 @@ $GLOBALS['pages'] = get_pages();
                         <!--<td><input type="checkbox"/>(50 bytes-to-remove)</td>-->
                         </tr>';
         }
-        $post_table .= '</table></div></center>
-        </form>';
+        $post_table .= '</table></div></center>';
     }
         //echo '<br/><br/>PAGES: <br/><br/>';
         //for($i = 0; $i < count($GLOBALS['pages']); $i++){
@@ -219,98 +225,25 @@ $GLOBALS['pages'] = get_pages();
     
 
     echo '<br/><center>
-    <input type="submit" name="optimize" class="button" value="optimize" />
+    <b>Override All Current:</b> Alt data: <input type="checkbox"/>, 
+    Meta Descriptions: <input type="checkbox"/>, 
+    Meta Keywords: <input type="checkbox"/>,
+    Open Graph Meta Tags: <input type="checkbox"/>,
+    Essential Tags: <input type="checkbox"/>,
+    Non-Essential Tags: <input type="checkbox"/>
+
+    <br/></center>
+    <br/><center>
+    <input type="submit" name="optimize" value="optimize" />
     </center></form>';
 
-    
-
-
-    //css
-    echo '<style>
-
-    .table-container{
-        overflow-y:scroll;
-        max-height: 300px;
-        
-
-        width: 90%;
-        position: relative; 
-        
+    if(isset($_POST["check_alt"])) {
+        echo  $_POST['check_alt'];
     }
     
 
-   
 
-        caption {
-            border-top-right-radius: 10px;
-            border-top-left-radius: 10px;
-        }
-            
-        table.timecard {
-            margin: auto;
-            width: 100%;
-            border-collapse: collapse;
-            box-shadow: 0 0 25px gray;
-        }
-
-        table.timecard caption {
-            background-color: lightcoral;
-            color: #fff;
-            letter-spacing: .3em;
-        }
-
-        table.timecard thead th {
-            padding: 8px;
-            background-color: white;
-            font-size: large;
-        }
-
-        table.timecard thead th #thDay {
-            width: 40%;	
-        }
-
-        table.timecard thead th #thRegular, table.timecard thead th#thOvertime, table.timecard thead th#thTotal {
-            width: 20%;
-        }
-
-        table.timecard th, table.timecard td {
-            padding: 3px;
-            border-width: 1px;
-            border-style: solid;
-            border-color: #fdf1f1 lightgray;
-        }
-
-        table.timecard td {
-            text-align: left;
-        }
-
-        table.timecard tbody th {
-            text-align: left;
-            font-weight: normal;
-        }
-
-        table.timecard tr.even {
-            background-color: #fdf1f1;
-        }
-        table.timecard tr.odd {
-            background-color: white;
-        }
-
-        .button{
-            padding: 7px;
-            margin: 7px;
-            background-color: lightcoral;
-            border-radius: 5px;
-            border: 0;
-            color: white;
-            box-shadow: 0px 0px 15px lightgray;
-        }
-
-        .button:hover {
-            filter: brightness(95%);
-            cursor: pointer;
-        }
-        </style>';
+   // echo '</body>';
 
        
  }
@@ -393,3 +326,89 @@ add_action('wp_body_open', 'loyae_add_body_data');
 //Follow this: https://github.com/mpeshev/DX-Plugin-Base
 
 //https://www.loyae.com/assets/logos/logo.svg
+
+?>
+
+<style>
+        .table-container{
+            overflow-y:scroll;
+            max-height: 300px;
+            
+
+            width: 90%;
+            position: relative; 
+            
+        }
+    
+
+        caption {
+            border-top-right-radius: 10px;
+            border-top-left-radius: 10px;
+        }
+            
+        table.timecard {
+            margin: auto;
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 0 25px gray;
+        }
+
+        table.timecard caption {
+            background-color: lightcoral;
+            color: #fff;
+            letter-spacing: .3em;
+            padding: 4px;
+        }
+
+        table.timecard thead th {
+            padding: 8px;
+            background-color: white;
+            font-size: large;
+        }
+
+        table.timecard thead th #thDay {
+            width: 40%;	
+        }
+
+        table.timecard thead th #thRegular, table.timecard thead th#thOvertime, table.timecard thead th#thTotal {
+            width: 20%;
+        }
+
+        table.timecard th, table.timecard td {
+            padding: 3px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #fdf1f1 lightgray;
+        }
+
+        table.timecard td {
+            text-align: left;
+        }
+
+        table.timecard tbody th {
+            text-align: left;
+            font-weight: normal;
+        }
+
+        table.timecard tr.even {
+            background-color: #fdf1f1;
+        }
+        table.timecard tr.odd {
+            background-color: white;
+        }
+
+        input[type="submit"]{
+            padding: 7px;
+            margin: 7px;
+            background-color: lightcoral;
+            border-radius: 5px;
+            border: 0;
+            color: white;
+            box-shadow: 0px 0px 15px lightgray;
+        }
+
+        input[type="submit"]:hover {
+            filter: brightness(95%);
+            cursor: pointer;
+        }
+</style>
