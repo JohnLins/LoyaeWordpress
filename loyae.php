@@ -11,7 +11,7 @@ global $wpdb;
 $wpdb->show_errors();
 //echo "<pre>";print_r($get);echo "</pre>";
 //if (!in_array('loyae_generated_data', $wpdb->tables)) {
-    $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
+    
 //}
 
  
@@ -222,6 +222,9 @@ function loyae_admin_page() {
 }
 
 
+
+
+
  class GeneratedMeta {
     public $keywords;
     public $description;
@@ -269,15 +272,59 @@ function get_generated_meta($id){
     return $meta;
 }
 
-function loyae_add_meta_tag($id) {
+
+
+
+
+$loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
+$charset_collate = $wpdb->get_charset_collate();
+
+$sql = "CREATE TABLE $loyae_generated_data (
+  keywords text DEFAULT '' NOT NULL,
+  description text DEFAULT '' NOT NULL,
+  author text DEFAULT '' NOT NULL,
+  date text DEFAULT '' NOT NULL,
+  title text DEFAULT '' NOT NULL
+) $charset_collate;";
+
+require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+dbDelta( $sql );
+
+
+if(array_key_exists('optimize', $_POST)) {
     
+    //testing
+    $selected_posts = array(8, 5);//ids
+        echo '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Last Optimized:' . date('Y-m-d H:i:s');
+        // run get_generated_meta and put it in wpdb database
+         //If the table wasn't already made, make it
+       
+
+        foreach($selected_posts as $id){
+            $wpdb->insert($loyae_generated_data, json_decode(json_encode(get_generated_meta($id)), true));
+        }
+
+    $result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data );
+    foreach ( $result as $print )   {
+    
+        echo $print->keywords;
+    }
+        
+}
+
+
+
+function loyae_add_meta_tag($id) {
+    global $wpdb;
+    $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
     //if you don't specify an ID, it updates all posts
         if(is_single($id) or $id == null){
 
             //call from the wpdb database instead
-            $meta = get_generated_meta($id);
-            //$meta = $wpdb->get_results( "SELECT * FROM loyae_generated_data");
+            //$meta = get_generated_meta($id);
+            $meta = ($wpdb->get_results( "SELECT * FROM ".$loyae_generated_data))[0]; //I'm just taking the first element, but you need to index it for the right post
+            //echo implode(" ",$meta);
             
             echo '<meta name="description" content="' . $meta->description . '" />' . "\n";
             echo '<meta name="keywords" content="' . $meta->keywords . '" />' . "\n";
@@ -295,19 +342,7 @@ function loyae_add_body_data($id){
 
 
 
-if(array_key_exists('optimize', $_POST)) {
-    //testing
-    $selected_posts = array(8, 5);//ids
-        echo '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Last Optimized:' . date('Y-m-d H:i:s');
-        // run get_generated_meta and put it in wpdb database
-         //If the table wasn't already made, make it
-       
 
-        foreach($selected_posts as $id){
-            $wpdb->insert($loyae_generated_data, json_decode(json_encode(get_generated_meta($id)), true));
-        }
-        
-}
 
 
 add_action( 'wp_head', 'loyae_add_meta_tag');
