@@ -32,6 +32,9 @@ function my_menu() {
 
 
 
+
+
+
 class Diagnostic {
     public $number_of_imgs;
     public $num_of_imgs_with_alt;
@@ -120,7 +123,16 @@ function local_diagnostic($id){
 
 
 
+class Form {
+    public $alt;
+    public $description;
+    public $keywords;
+    public $og;
+    public $essential;
+    public $nonessential;
+}
 
+//When the form is submitted, create an array of Form objects
 
 
 function loyae_admin_page() {
@@ -137,18 +149,18 @@ function loyae_admin_page() {
 
         foreach(array("posts", "pages") as $cat){
             if( ! empty( $GLOBALS[$cat] ) ){
-                $post_table .= '<center><div class="table-container"><table class="timecard">
+                $post_table .= '<center> Everything: <input type="checkbox" onclick="toggle(this, `'.$cat.'`)" /><br/><br/><div class="table-container"><table class="timecard">
                                 <caption>'.ucfirst($cat).'</caption>
                                 <thread>
                                 <tr>
                                 <th>Post</th>
                                 <th>Diagnostic (Free)</th>
-                                <th>Optimize Alt <br/>{AI}</th>
-                                <th>Optimize Meta <br/>(Description)<br/>{AI}</th>
-                                <th>Optimize Meta <br/>(keywords)<br/>{AI}</th>
-                                <th>Optimize Open Graph Meta Tags</th>
-                                <th>Optimize Essential Tags</th>
-                                <th>Optimize 3rd-party Tags (Non-Essential)</th>
+                                <th>Optimize Alt <br/> <input type="checkbox" onclick="toggle(this, `'.$cat.'_check_alt`)" /><br/>{AI}</th>
+                                <th>Optimize Meta <br/>(Description)<br/><input type="checkbox" onclick="toggle(this, `'.$cat.'_check_description`)" /><br/>{AI}</th>
+                                <th>Optimize Meta <br/>(keywords)<br/><input type="checkbox" onclick="toggle(this, `'.$cat.'_check_keywords`)" /><br/>{AI}</th>
+                                <th>Optimize Open Graph Meta Tags<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_og`)" /><br/></th>
+                                <th>Optimize Essential Tags<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_essential`)" /><br/></th>
+                                <th>Optimize 3rd-party Tags (Non-Essential)<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_nonessential`)" /><br/></th>
                                 <!--<th>Compress</th>-->
                                 </tr>
                                 </thread>';
@@ -164,12 +176,12 @@ function loyae_admin_page() {
                                 <td><a href="' . get_permalink($id) .'">' 
                                 . ($GLOBALS[$cat])[$i]->post_title .' ('.$id.') </a></td>
                                 <td><a href="javascript:diagnose('.$GLOBALS[$cat][$i]->ID.')">🔍</a></td>
-                                <td><input type="checkbox" name="check_alt"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
-                            <td>'. ($temp_local_diagnostic->is_meta_description ? '<span style="color: green;">None Missing</span>'  : '<input type="checkbox"/> <span style="color: red;">Missing</span>') .'</td>
-                                <td><input type="checkbox"/><span  style="color:'.(($temp_local_diagnostic->number_of_meta_keywords >= 10) ? 'green':'red').'">('. 10 - $temp_local_diagnostic->number_of_meta_keywords.'/10 missing)</span></td>
-                                <td><input type="checkbox"/>('.(6-$temp_local_diagnostic->number_of_og_meta).'/6 missing)</td>
+                                <td><input type="checkbox" class="'.$cat.'_check_alt '.$cat.'"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
+                            <td>'. ($temp_local_diagnostic->is_meta_description ? '<span style="color: green;">None Missing</span>'  : '<input type="checkbox" class="'.$cat.'_check_description '.$cat.'"/> <span style="color: red;">Missing</span>') .'</td>
+                                <td><input type="checkbox" class="'.$cat.'_check_keywords '.$cat.'"/><span  style="color:'.(($temp_local_diagnostic->number_of_meta_keywords >= 10) ? 'green':'red').'">('. 10 - $temp_local_diagnostic->number_of_meta_keywords.'/10 missing)</span></td>
+                                <td><input type="checkbox" class="'.$cat.'_check_og '.$cat.'"/>('.(6-$temp_local_diagnostic->number_of_og_meta).'/6 missing)</td>
                                 <td><!--<input type="checkbox"/>--><span style="color:green">(0 missing)</span></td>
-                                <td><input type="checkbox"/>(-- missing)</td>
+                                <td><input type="checkbox" class="'.$cat.'_check_nonessential '.$cat.'"/>(-- missing)</td>
                                 <!--<td><input type="checkbox"/>(50 bytes-to-remove)</td>-->
                                 </tr>';
                 }
@@ -194,7 +206,15 @@ function loyae_admin_page() {
         $post_table .= '<script>
                         function diagnose(id){
                         window.alert(id);
-                        } </script>';
+                        } 
+                        
+                        function toggle(source, name) {
+                            checkboxes = document.getElementsByClassName(name);
+                            for(var i=0, n=checkboxes.length;i<n;i++) {
+                              checkboxes[i].checked = source.checked;
+                            }
+                          }
+                        </script>';
 
 
         echo $post_table;
