@@ -123,18 +123,11 @@ function local_diagnostic($id){
 
 
 
-class Form {
-    public $alt;
-    public $description;
-    public $keywords;
-    public $og;
-    public $essential;
-    public $nonessential;
-}
-
 //When the form is submitted, create an array of Form objects
 
 
+
+add_action( 'admin_post_loyae_form', 'loyae_form_handler' );
 function loyae_admin_page() {
 
         echo    '<br/><div><center>
@@ -145,7 +138,8 @@ function loyae_admin_page() {
 
 
         //latest 20 posts, not quite working yet
-        $post_table = '<form action="loyae.php" method="post">';
+        $post_table = '<form action="admin-post.php" method="post">
+                       <input type="hidden" name="action" value="loyae_form">';
 
         foreach(array("posts", "pages") as $cat){
             if( ! empty( $GLOBALS[$cat] ) ){
@@ -161,7 +155,6 @@ function loyae_admin_page() {
                                 <th>Optimize Open Graph Meta Tags<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_og`)" /><br/></th>
                                 <th>Optimize Essential Tags<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_essential`)" /><br/></th>
                                 <th>Optimize 3rd-party Tags (Non-Essential)<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_nonessential`)" /><br/></th>
-                                <!--<th>Compress</th>-->
                                 </tr>
                                 </thread>';
 
@@ -176,13 +169,13 @@ function loyae_admin_page() {
                                 <td><a href="' . get_permalink($id) .'">' 
                                 . ($GLOBALS[$cat])[$i]->post_title .' ('.$id.') </a></td>
                                 <td><a href="javascript:diagnose('.$GLOBALS[$cat][$i]->ID.')">🔍</a></td>
-                                <td><input type="checkbox" class="'.$cat.'_check_alt '.$cat.'"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
-                            <td>'. ($temp_local_diagnostic->is_meta_description ? '<span style="color: green;">None Missing</span>'  : '<input type="checkbox" class="'.$cat.'_check_description '.$cat.'"/> <span style="color: red;">Missing</span>') .'</td>
-                                <td><input type="checkbox" class="'.$cat.'_check_keywords '.$cat.'"/><span  style="color:'.(($temp_local_diagnostic->number_of_meta_keywords >= 10) ? 'green':'red').'">('. 10 - $temp_local_diagnostic->number_of_meta_keywords.'/10 missing)</span></td>
-                                <td><input type="checkbox" class="'.$cat.'_check_og '.$cat.'"/>('.(6-$temp_local_diagnostic->number_of_og_meta).'/6 missing)</td>
-                                <td><!--<input type="checkbox"/>--><span style="color:green">(0 missing)</span></td>
-                                <td><input type="checkbox" class="'.$cat.'_check_nonessential '.$cat.'"/>(-- missing)</td>
-                                <!--<td><input type="checkbox"/>(50 bytes-to-remove)</td>-->
+
+                                <td><input type="checkbox" name="'.$id.'_alt" class="'.$cat.'_check_alt '.$cat.'"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
+                                <td>'. ($temp_local_diagnostic->is_meta_description ? '<span style="color: green;">None Missing</span>'  : '<input type="checkbox" name="'.$id.'_description" class="'.$cat.'_check_description '.$cat.'"/> <span style="color: red;">Missing</span>') .'</td>
+                                <td><input type="checkbox" name="'.$id.'_keywords" class="'.$cat.'_check_keywords '.$cat.'"/><span  style="color:'.(($temp_local_diagnostic->number_of_meta_keywords >= 10) ? 'green':'red').'">('. 10 - $temp_local_diagnostic->number_of_meta_keywords.'/10 missing)</span></td>
+                                <td><input type="checkbox" name="'.$id.'_og" class="'.$cat.'_check_og '.$cat.'"/>('.(6-$temp_local_diagnostic->number_of_og_meta).'/6 missing)</td>
+                                <td><input type="checkbox" name="'.$id.'_essential" class="'.$cat.'_check_essential '.$cat.'"/><span style="color:green">(-- missing)</span></td>
+                                <td><input type="checkbox" name="'.$id.'_nonessential" class="'.$cat.'_check_nonessential '.$cat.'"/>(-- missing)</td>
                                 </tr>';
                 }
                 $post_table .= '</table></div></center> </br></br></br>';
@@ -243,11 +236,25 @@ function loyae_admin_page() {
 
 
 
+class Form {
+    public $id;
+    public $alt;
+    public $description;
+    public $keywords;
+    public $og;
+    public $essential;
+    public $nonessential;
+}
+
 
 
  class GeneratedMeta {
-    public $keywords;
     public $description;
+    public $keywords;
+    /*public $og;
+    public $essential;
+    public $nonessential;*/
+    
     public $author;
     public $date;
     public $title;
@@ -274,54 +281,101 @@ function loyae_admin_page() {
 */
  // add_post_meta( $GLOBALS['posts'][0], 'description', 'Loyae Meta Des', false);
 
-function get_generated_meta($id){
-    $post_text = wp_strip_all_tags(apply_filters('the_content', get_post_field('post_content', $id)));
+function get_generated_meta($form){
+    $post_text = wp_strip_all_tags(apply_filters('the_content', get_post_field('post_content', $form->id)));
 
     //put into meta API
     $meta = new GeneratedMeta();
 
     //RUN IT THROUGH THE API HERE
-    $post_class = get_post($id);
+    $post_class = get_post($form->id);
 
-    $meta->keywords = "abc, bca, cab";
-    $meta->description = 'abcdefg34'.$post_text;
-    $meta->author = $post_class->post_author;
-    $meta->date = $post_class->post_date;
-    $meta->title = $post_class->post_title;
+    
+    $meta->description = ($form->description) ? 'DES'.$post_text : "<NULL>";
+    $meta->keywords = ($form->keywords) ? "KEY1, KEY2, KEY3" : "<NULL>";
+    $meta->author = ($form->essential) ? $post_class->post_author : "<NULL>";
+    $meta->date = ($form->essential) ? $post_class->post_date : "<NULL>";
+    $meta->title = ($form->essential) ? $post_class->post_title : "<NULL>";
+    
 
-    return $meta;
+    return $meta; //generatedMeta type
 }
 
 
 
 
-
-$loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
-$charset_collate = $wpdb->get_charset_collate();
-
-$sql = "CREATE TABLE $loyae_generated_data (
-  keywords text DEFAULT '' NOT NULL,
-  description text DEFAULT '' NOT NULL,
-  author text DEFAULT '' NOT NULL,
-  date text DEFAULT '' NOT NULL,
-  title text DEFAULT '' NOT NULL
-) $charset_collate;";
-
-require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-dbDelta( $sql );
+    
 
 
-if(array_key_exists('optimize', $_POST)) {
+
+function loyae_form_handler() {
+    global $wpdb;
+    $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
+    $charset_collate = $wpdb->get_charset_collate();
+    
+    $sql = "CREATE TABLE $loyae_generated_data (
+      keywords text DEFAULT '' NOT NULL,
+      description text DEFAULT '' NOT NULL,
+      author text DEFAULT '' NOT NULL,
+      date text DEFAULT '' NOT NULL,
+      title text DEFAULT '' NOT NULL
+    ) $charset_collate;";
+    
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $sql );
+
+
+
+
+
+    status_header(200);
+    print_r($_POST);
+
+
+//if(array_key_exists('optimize', $_POST)) {
     
     //testing
-    $selected_posts = array(8, 5);//ids
-        echo '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Last Optimized:' . date('Y-m-d H:i:s');
+   // $selected_posts = array(8, 5);//ids
+        echo "\n Last Optimized" . date('Y-m-d H:i:s') . "\n";
         // run get_generated_meta and put it in wpdb database
          //If the table wasn't already made, make it
-       
 
-        foreach($selected_posts as $id){
-            $wpdb->insert($loyae_generated_data, json_decode(json_encode(get_generated_meta($id)), true));
+        $keys = array_keys($_POST); 
+        $form = new Form();
+        $form->id=(int)substr($keys[0], 0, strpos($keys[0], "_"));
+        foreach($keys as $p){
+            $id = (int)substr($p, 0, strpos($p, "_"));
+
+            if($id != $form->id){
+                $wpdb->insert($loyae_generated_data, json_decode(json_encode(get_generated_meta($form)), true));
+                $form = null;
+                $form = new Form();
+                $form->id=$id;
+            }
+
+
+            $type = substr($p, strpos($p, "_") + 1);
+
+            if($type == "alt"){
+                $form->alt = true; 
+            }
+            if($type == "description"){
+                $form->description = true; 
+            }
+            if($type == "keywords"){
+                $form->keywords = true; 
+            }
+            if($type == "og"){
+                $form->og = true; 
+            }
+            if($type == "essential"){
+                $form->essential = true; 
+            }
+            if($type == "nonessential"){
+                $form->nonessential = true; 
+            }
+
+            
         }
 
     $result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data );
@@ -330,7 +384,19 @@ if(array_key_exists('optimize', $_POST)) {
         echo $print->keywords;
     }
         
+//}
+
+    //request handlers should exit() when they complete their task
+    exit("Done :)");
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -346,6 +412,7 @@ function loyae_add_meta_tag($id) {
             $meta = ($wpdb->get_results( "SELECT * FROM ".$loyae_generated_data))[0]; //I'm just taking the first element, but you need to index it for the right post
             //echo implode(" ",$meta);
             
+            //If it's <NULL> then don't put it in
             echo '<meta name="description" content="' . $meta->description . '" />' . "\n";
             echo '<meta name="keywords" content="' . $meta->keywords . '" />' . "\n";
             echo '<meta name="article:published_time" content="' . $meta->date . '" />' . "\n";
@@ -357,9 +424,15 @@ function loyae_add_meta_tag($id) {
 
 
 function loyae_add_body_data($id){
-    echo 'ALT DATA IS SUS!!';
-}
+    return 'ALLLL';/*
+    update_post_meta( $id, '_wp_attachment_image_alt', 'ALTDATA' );
+    $my_image_meta = array(
+        'ID' => $id,			
+        'post_title' => "ALTDATA",		
 
+    );
+    wp_update_post( $my_image_meta );*/
+}
 
 
 
@@ -367,6 +440,56 @@ function loyae_add_body_data($id){
 
 add_action( 'wp_head', 'loyae_add_meta_tag');
 add_action('wp_body_open', 'loyae_add_body_data');
+
+
+
+
+
+
+//experimenting--stillb buggy
+
+//puts image url into alt
+function callback($buffer) {	
+
+	preg_match_all('/<img (.*?)\/>/', $buffer, $images);
+	if(!is_null($images)) {
+		foreach($images[1] as $index => $value) {
+			preg_match('/alt="(.*?)"/', $value, $img);
+			preg_match('/alt=\"(.*?)\"/', $value, $img2);
+			
+			preg_match('/data-src="(.*?)"/', $value, $imgurl);
+			
+			$image_url = $imgurl[1];
+          
+          	//get alt from url in WordPress
+    		global $wpdb;   		
+    		$query_arr  = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE guid='%s';", strtolower( $image_url ) ) );
+    		$image_id   = ( ! empty( $query_arr ) ) ? $query_arr[0] : 0;
+
+    		$title = wp_get_attachment_image_url($image_id, '');//get_post_meta( $image_id, '_wp_attachment_image_alt', true );
+			
+			
+			if(!is_null($images)) {
+				if((!isset($img[1]) || $img[1] == '') || (!isset($img2[1]) || $img2[1] == '')) {
+					
+					$new_img = str_replace('<img', '<img alt="YOOO'.$title.'"', $images[0][$index]);
+					$buffer = str_replace($images[0][$index], $new_img, $buffer);
+				}
+			}
+		}
+	}
+
+return $buffer;
+}
+
+function buffer_start() { ob_start(); }
+
+function buffer_end() { echo callback(ob_get_clean()); }
+
+add_action('wp', 'buffer_start', 0);
+add_action('wp_footer', 'buffer_end');
+
+
 
 //   update_post_meta()
 
