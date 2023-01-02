@@ -249,15 +249,15 @@ class Form {
 
 
  class GeneratedMeta {
-    public $description;
-    public $keywords;
+    public $loyae_description;
+    public $loyae_keywords;
     /*public $og;
     public $essential;
     public $nonessential;*/
     
-    public $author;
-    public $date;
-    public $title;
+    public $loyae_author;
+    public $loyae_date;
+    public $loyae_title;
  }
 
 
@@ -290,15 +290,15 @@ function get_generated_meta($form){
     //RUN IT THROUGH THE API HERE
     $post_class = get_post($form->id);
 
-    
-    $meta->description = ($form->description) ? 'DES'.$post_text : "<NULL>";
-    $meta->keywords = ($form->keywords) ? "KEY1, KEY2, KEY3" : "<NULL>";
-    $meta->author = ($form->essential) ? $post_class->post_author : "<NULL>";
-    $meta->date = ($form->essential) ? $post_class->post_date : "<NULL>";
-    $meta->title = ($form->essential) ? $post_class->post_title : "<NULL>";
+    $meta->ID = $form->id;
+    $meta->loyae_description = ($form->description) ? 'DES'.$post_text : "<NULL>";
+    $meta->loyae_keywords = ($form->keywords) ? "KEY1, KEY2, KEY3" : "<NULL>";
+    $meta->loyae_author = ($form->essential) ? $post_class->post_author : "<NULL>";
+    $meta->loyae_date = ($form->essential) ? $post_class->post_date : "<NULL>";
+    $meta->loyae_title = ($form->essential) ? $post_class->post_title : "<NULL>";
     
 
-    return $meta; //generatedMeta type
+    return (array)$meta; //generatedMeta type
 }
 
 
@@ -309,16 +309,26 @@ function get_generated_meta($form){
 
 
 function loyae_form_handler() {
+
     global $wpdb;
     $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
+
+
+////////////////   
+     $wpdb->query("DROP TABLE IF EXISTS $loyae_generated_data");
+///////////////
+
+
     $charset_collate = $wpdb->get_charset_collate();
     
     $sql = "CREATE TABLE $loyae_generated_data (
-      keywords text DEFAULT '' NOT NULL,
-      description text DEFAULT '' NOT NULL,
-      author text DEFAULT '' NOT NULL,
-      date text DEFAULT '' NOT NULL,
-      title text DEFAULT '' NOT NULL
+      ID int NOT NULL,
+      loyae_description text DEFAULT '' NOT NULL,
+      loyae_keywords text DEFAULT '' NOT NULL,
+      loyae_author text DEFAULT '' NOT NULL,
+      loyae_date text DEFAULT '' NOT NULL,
+      loyae_title text DEFAULT '' NOT NULL,
+      PRIMARY KEY (ID)
     ) $charset_collate;";
     
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -330,15 +340,8 @@ function loyae_form_handler() {
 
     status_header(200);
     print_r($_POST);
-
-
-//if(array_key_exists('optimize', $_POST)) {
-    
-    //testing
-   // $selected_posts = array(8, 5);//ids
-        echo "\n Last Optimized" . date('Y-m-d H:i:s') . "\n";
-        // run get_generated_meta and put it in wpdb database
-         //If the table wasn't already made, make it
+    echo '<br/><br/>';
+        echo "\n Last Optimized" . date('Y-m-d H:i:s') . "<br/><br/>";
 
         $keys = array_keys($_POST); 
         $form = new Form();
@@ -347,7 +350,7 @@ function loyae_form_handler() {
             $id = (int)substr($p, 0, strpos($p, "_"));
 
             if($id != $form->id){
-                $wpdb->insert($loyae_generated_data, json_decode(json_encode(get_generated_meta($form)), true));
+            $wpdb->insert($loyae_generated_data, get_generated_meta($form));
                 $form = null;
                 $form = new Form();
                 $form->id=$id;
@@ -378,15 +381,19 @@ function loyae_form_handler() {
             
         }
 
+
+    echo '<br/><br/>';
     $result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data );
     foreach ( $result as $print )   {
     
-        echo $print->keywords;
+        print_r($print);
     }
+
         
 //}
-
+//print_r($wpdb->tables() );
     //request handlers should exit() when they complete their task
+    echo '<br/><br/>';
     exit("Done :)");
 }
 
@@ -400,24 +407,27 @@ function loyae_form_handler() {
 
 
 
-function loyae_add_meta_tag($id) {
+function loyae_add_meta_tag() {
     global $wpdb;
     $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
     //if you don't specify an ID, it updates all posts
-        if(is_single($id) or $id == null){
+        if(is_single() /*or $id == null*/){
 
             //call from the wpdb database instead
             //$meta = get_generated_meta($id);
-            $meta = ($wpdb->get_results( "SELECT * FROM ".$loyae_generated_data))[0]; //I'm just taking the first element, but you need to index it for the right post
+            //$meta = ($wpdb->get_results( "SELECT * FROM ".$loyae_generated_data))[$id]; //I'm just taking the first element, but you need to index it for the right post
             //echo implode(" ",$meta);
+            $q = 'SELECT * FROM ' . $loyae_generated_data . ' WHERE ID = '. get_the_ID();
+            $meta = ($wpdb->get_results($q))[0];
+    
             
             //If it's <NULL> then don't put it in
-            echo '<meta name="description" content="' . $meta->description . '" />' . "\n";
-            echo '<meta name="keywords" content="' . $meta->keywords . '" />' . "\n";
-            echo '<meta name="article:published_time" content="' . $meta->date . '" />' . "\n";
-            echo '<meta name="article:author" content="' . $meta->author . '" />' . "\n";
-            echo '<title>' . $meta->title . '</title>' . "\n";
+            echo '<meta name="description" content="' . $meta->loyae_description . '" />' . "\n";
+            echo '<meta name="keywords" content="' . $meta->loyae_keywords . '" />' . "\n";
+            echo '<meta name="article:published_time" content="' . $meta->loyae_date . '" />' . "\n";
+            echo '<meta name="article:author" content="' . $meta->loyae_author . '" />' . "\n";
+            echo '<title>' . $meta->loyae_title . '</title>' . "\n";
         }
    
 }
