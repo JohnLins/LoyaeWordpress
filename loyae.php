@@ -3,7 +3,7 @@
  * Plugin Name: Loyae
  * Plugin URI:        https://loyae.com/
  * Description:       Seamlessly using machine learning to optimise web pages for SEO and SEM.
- * Author:            Lins Technologies
+ * Author:            Loyae
  */
 
 
@@ -67,6 +67,7 @@ function local_diagnostic($id){
     @ $dom->loadHTML($res);
     //DOMElement
     $images = $dom->getElementsByTagName("img");
+    
 
     // echo $images->item(0)->attributes->getNamedItem("src")->value . "<br/><br/>";
     // echo $images->item(1)->attributes->getNamedItem("src")->value . "<br/><br/>";
@@ -85,29 +86,56 @@ function local_diagnostic($id){
 
 
     
+
     $metas = $dom->getElementsByTagName("meta");
+    
 
     $output->is_meta_description = false;
+    $output->is_meta_og_description = false;
+    $output->is_meta_og_image = false;
+    $output->is_meta_og_image_width = false;
+    $output->is_meta_og_image_height = false;
+    $output->is_meta_og_image_type = false;
+    $output->is_meta_og_site_name = false;
+    $output->is_meta_og_keywords = false;
+    $output->is_meta_og_title = false;
+    $output->is_meta_og_url = false;
     $output->number_of_meta_keywords = 0;
-    $output->number_of_og_meta = 0;
+    $output->is_meta_theme_color = false;
+    $output->is_meta_twitter_card = false;
+    $output->is_meta_twitter_title = false;
+    $output->is_meta_twitter_description = false;
+    $output->is_meta_twitter_image = false;
+    $output->is_meta_twitter_url = false;
+    $output->is_meta_apple_mobile_web_app_status_bar_style = false;
+    $output->is_meta_apple_mobile_web_app_title = false;
+
 
     for ($i = 0; $i < count($metas); $i++){
         $temp = $metas->item($i)->attributes->getNamedItem("name")->value;
 
         if($temp == "description"){$output->is_meta_description = true;}
-        if($temp == "keywords"){
-            //explode(',', $myString);
-            $output->number_of_meta_keywords = substr_count($meta->item(i)->attributes->getNamedItem("content"), ",");
-        }
-        if(substr($temp, 0, 3) == "og:"){$output->number_of_og_meta++;}
+        if($temp == "og:description"){$output->is_meta_og_description = true;}
+        if($temp == "og:image"){$output->is_meta_og_image = true;}
+        if($temp == "og:image:width"){$output->is_meta_og_image_width = true;}
+        if($temp == "og:image:height"){$output->is_meta_og_image_height = true;}
+        if($temp == "og:image:type"){$output->is_meta_og_image_type = true;}
+        if($temp == "og:site_name"){$output->is_meta_og_site_name = true;}
+        if($temp == "og:keywords"){$output->is_meta_og_keywords = true;}
+        if($temp == "og:title"){$output->is_meta_og_title = true;}
+        if($temp == "og:url"){$output->is_meta_og_url = true;}
+        if($temp == "keywords"){$output->number_of_meta_keywords = substr_count($meta->item(i)->attributes->getNamedItem("content"), ",");}
+        if($temp == "theme-color"){$output->is_meta_theme_color = true;}
+        if($temp == "twitter:card"){$output->is_meta_twitter_card = true;}
+        if($temp == "twitter:title"){$output->is_meta_twitter_title = true;}
+        if($temp == "twitter:description"){$output->is_meta_twitter_descriptio = true;}
+        if($temp == "twitter:image"){$output->is_meta_twitter_image = true;}
+        if($temp == "twitter:url"){$output->is_meta_twitter_url = true;}
+        if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;}
+        if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;}
 
 
     }
-
-    
-    //number of meta tags
-    $output->number_of_meta = count($metas);
-
 
 
 
@@ -147,35 +175,64 @@ function loyae_admin_page() {
                                 <caption>'.ucfirst($cat).'</caption>
                                 <thread>
                                 <tr>
+                                <th></th>
                                 <th>Post</th>
                                 <th>Diagnostic (Free)</th>
-                                <th>Optimize Alt <br/> <input type="checkbox" onclick="toggle(this, `'.$cat.'_check_alt`)" /><br/>{AI}</th>
-                                <th>Optimize Meta <br/>(Description)<br/><input type="checkbox" onclick="toggle(this, `'.$cat.'_check_description`)" /><br/>{AI}</th>
-                                <th>Optimize Meta <br/>(keywords)<br/><input type="checkbox" onclick="toggle(this, `'.$cat.'_check_keywords`)" /><br/>{AI}</th>
-                                <th>Optimize Open Graph Meta Tags<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_og`)" /><br/></th>
-                                <th>Optimize Essential Tags<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_essential`)" /><br/></th>
-                                <th>Optimize 3rd-party Tags (Non-Essential)<input type="checkbox" onclick="toggle(this, `'.$cat.'_check_nonessential`)" /><br/></th>
+                                <th>Image Alt Text</th>
+                                <th>Meta Description</th>
+                                <th>OG Meta Tags</th>
+                                <th>Other Tags<br/></th>
                                 </tr>
                                 </thread>';
 
-                
+                              
                 
                 for($i = 0; $i < count($GLOBALS[$cat]); $i++){
                     $class = ''; if($i % 2 == 0){ $class = 'even';}else {$class = 'odd';}
                         $id = ($GLOBALS[$cat])[$i]->ID;
                         $temp_local_diagnostic = local_diagnostic($id);
-
+                                
                                 $post_table .= '<tr class="'. $class .'">
+
+
+                                <td><input type="checkbox" name="'.$id.'_box" class="'.$cat.'"/></td>
                                 <td><a href="' . get_permalink($id) .'">' 
                                 . ($GLOBALS[$cat])[$i]->post_title .' ('.$id.') </a></td>
                                 <td><a href="javascript:diagnose('.$GLOBALS[$cat][$i]->ID.')">🔍</a></td>
 
-                                <td><input type="checkbox" name="'.$id.'_alt" class="'.$cat.'_check_alt '.$cat.'"/><span style="color:red">('. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .' of '.$temp_local_diagnostic->number_of_imgs.' missing)</span></td>
-                                <td>'. ($temp_local_diagnostic->is_meta_description ? '<span style="color: green;">None Missing</span>'  : '<input type="checkbox" name="'.$id.'_description" class="'.$cat.'_check_description '.$cat.'"/> <span style="color: red;">Missing</span>') .'</td>
-                                <td><input type="checkbox" name="'.$id.'_keywords" class="'.$cat.'_check_keywords '.$cat.'"/><span  style="color:'.(($temp_local_diagnostic->number_of_meta_keywords >= 10) ? 'green':'red').'">('. 10 - $temp_local_diagnostic->number_of_meta_keywords.'/10 missing)</span></td>
-                                <td><input type="checkbox" name="'.$id.'_og" class="'.$cat.'_check_og '.$cat.'"/>('.(6-$temp_local_diagnostic->number_of_og_meta).'/6 missing)</td>
-                                <td><input type="checkbox" name="'.$id.'_essential" class="'.$cat.'_check_essential '.$cat.'"/><span style="color:green">(-- missing)</span></td>
-                                <td><input type="checkbox" name="'.$id.'_nonessential" class="'.$cat.'_check_nonessential '.$cat.'"/>(-- missing)</td>
+                                <td><span>Missing <b>'. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .'</b> of '.$temp_local_diagnostic->number_of_imgs.'</span></td>
+                            
+
+                                <td>'. ($temp_local_diagnostic->is_meta_description==true ? '<span style="color: green;">Has</span>'  : ' <span style="color: red;">Missing</span>') .'</td>
+                            
+
+                                <td>'.
+                                ($temp_local_diagnostic->is_meta_og_description==true?"<b>Has</b>":"<b>Missing</b>"). " og:description<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image==true?"<b>Has</b>":"<b>Missing</b>"). " og:image<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_width==true?"<b>Has</b>":"<b>Missing</b>"). " og:image:width<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_height==true?"<b>Has</b>":"<b>Missing</b>"). " og:image:height<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_type==true?"<b>Has</b>":"<b>Missing</b>"). " og:image:type<br/>".
+                                ($temp_local_diagnostic->is_meta_og_site_name==true?"<b>Has</b>":"<b>Missing</b>"). " og:site_name<br/>".
+                                ($temp_local_diagnostic->is_meta_og_keywords==true?"<b>Has</b>":"<b>Missing</b>"). " og:keywords<br/>".
+                                ($temp_local_diagnostic->is_meta_og_title==true?"<b>Has</b>":"<b>Missing</b>"). " og:title<br/>".
+                                ($temp_local_diagnostic->is_meta_og_url==true?"<b>Has</b>":"<b>Missing</b>"). " og:url<br/>"
+                                .'</td>
+                            
+
+
+
+                                <td>'.
+                                ($temp_local_diagnostic->is_meta_og_description==true?"Has":"missing"). "<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image==true?"Has":"missing"). "<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_width==true?"Has":"missing"). "<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_height==true?"Has":"missing"). "<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_type==true?"Has":"missing"). "<br/>".
+                                ($temp_local_diagnostic->is_meta_og_site_name==true?"Has":"missing"). "<br/>".
+                                ($temp_local_diagnostic->is_meta_og_keywords==true?"Has":"missing"). "<br/>"
+
+                                .'</td>
+                               
+
                                 </tr>';
                 }
                 $post_table .= '</table></div></center> </br></br></br>';
@@ -212,7 +269,7 @@ function loyae_admin_page() {
 
         echo $post_table;
 
-        echo   '<br/><center>
+        echo   '<br/><!--<center>
                 <b>Override All Current:</b> Alt data: <input type="checkbox"/>, 
                 Meta Descriptions: <input type="checkbox"/>, 
                 Meta Keywords: <input type="checkbox"/>,
@@ -220,7 +277,7 @@ function loyae_admin_page() {
                 Essential Tags: <input type="checkbox"/>,
                 Non-Essential Tags: <input type="checkbox"/>
 
-                <br/></center>
+                <br/></center>-->
                 <br/><center>
                 <input type="submit" name="optimize" value="optimize" />
                 </center>
@@ -421,35 +478,63 @@ function loyae_add_meta_tag() {
             $q = 'SELECT * FROM ' . $loyae_generated_data . ' WHERE ID = '. get_the_ID();
             $meta = ($wpdb->get_results($q))[0];
     
+
+
             
+            echo '<!--LOYAE: the following meta data has been generated by loyae.com-->';
             //If it's <NULL> then don't put it in
-            echo '<meta name="description" content="' . $meta->loyae_description . '" />' . "\n";
-            echo '<meta name="keywords" content="' . $meta->loyae_keywords . '" />' . "\n";
-            echo '<meta name="article:published_time" content="' . $meta->loyae_date . '" />' . "\n";
-            echo '<meta name="article:author" content="' . $meta->loyae_author . '" />' . "\n";
-            echo '<title>' . $meta->loyae_title . '</title>' . "\n";
+            if(metadata_exists('post', get_the_ID(), 'description')){
+                echo '<meta name="description" content="' . $meta->loyae_description . '" />' . "\n";
+            }
+
+            echo '<meta name="og:description" content="' . $meta->loyae_og_description . '" />' . "\n";
+            echo '<meta name="og:image" content="' . "-" . '" />' . "\n";
+            echo '<meta name="og:image:alt" content="' . "-" . '" />' . "\n";
+            echo '<meta name="og:image:width" content="' . "-" . '" />' . "\n";
+            echo '<meta name="og:image:height" content="' . "-" . '" />' . "\n";
+            echo '<meta name="og:image:type" content="' . "-" . '" />' . "\n";
+            echo '<meta name="og:site_name" content="' . "-" . '" />' . "\n";
+            echo '<meta name="og:title" content="' . "-" . '" />' . "\n";
+            echo '<meta name="og:url" content="' . "-" . '" />' . "\n";
+            echo '<meta name="og:keywords" content="' . $meta->loyae_keyword . '" />' . "\n";
+
+            echo '<meta name="keywords" content="' . "-" . '" />' . "\n";
+            echo '<meta name="theme-color" content="' . "-" . '" />' . "\n";
+            echo '<meta name="twitter:card" content="' . "-" . '" />' . "\n";
+            echo '<meta name="twitter:title" content="' . "-" . '" />' . "\n";
+            echo '<meta name="twitter:description" content="' . "-" . '" />' . "\n";
+            echo '<meta name="twitter:image" content="' . "-" . '" />' . "\n";
+            echo '<meta name="twitter:url" content="' . "-" . '" />' . "\n";
+            echo '<meta name="apple-mobile-web-app-status-bar-style" content="' . "-" . '" />' . "\n";
+            echo '<meta name="apple-mobile-web-app-title" content="' . "-" . '" />' . "\n";
+
+            echo '<meta name="loyae:last_optimized" content="DATE" />' . "\n";
+
+            echo '<!--LOYAE END-->';
         }
    
 }
 
 
-function loyae_add_body_data($id){
-    return 'ALLLL';/*
-    update_post_meta( $id, '_wp_attachment_image_alt', 'ALTDATA' );
-    $my_image_meta = array(
-        'ID' => $id,			
-        'post_title' => "ALTDATA",		
 
-    );
-    wp_update_post( $my_image_meta );*/
-}
+//UNUSED-
+// function loyae_add_body_data($id){
+    
+//     update_post_meta( $id, '_wp_attachment_image_alt', 'ALTDATA' );
+//     $my_image_meta = array(
+//         'ID' => $id,			
+//         'post_title' => "ALTDATA",		
+
+//     );
+//     wp_update_post( $my_image_meta );
+// }
 
 
 
 
 
 add_action( 'wp_head', 'loyae_add_meta_tag');
-add_action('wp_body_open', 'loyae_add_body_data');
+// add_action('wp_body_open', 'loyae_add_body_data');
 
 
 
@@ -482,7 +567,7 @@ function callback($buffer) {
 			if(!is_null($images)) {
 				if((!isset($img[1]) || $img[1] == '') || (!isset($img2[1]) || $img2[1] == '')) {
 					
-					$new_img = str_replace('<img', '<img alt="YOOO'.$title.'"', $images[0][$index]);
+					$new_img = str_replace('<img alt=\'\'', '<img alt="'.$image_url.':'.$title.'"', $images[0][$index]);
 					$buffer = str_replace($images[0][$index], $new_img, $buffer);
 				}
 			}
