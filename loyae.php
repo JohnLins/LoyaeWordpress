@@ -61,10 +61,18 @@ function local_diagnostic($id){
     <div><img src="https://i0.wp.com/www.hadeninteractive.com/wp-content/uploads/2016/11/natureornurture1.png?w=480&ssl=1"/></div><img src="https://sourceforge.net/sflogo.php?type=16&group_id=218559" alt="stuff"/>
     </body>
     ';*/
-    $res = get_post($id)->post_content;
-//echo $res;
+    /*$res = get_post($id)->post_content;
+
     $dom = new DomDocument();
-    @ $dom->loadHTML($res);
+    @ $dom->loadHTML($res);*/
+    $response = wp_remote_get( get_permalink($id) );
+$body = wp_remote_retrieve_body( $response );
+$dom = new DOMDocument();
+
+// Load the HTML into the DOMDocument
+libxml_use_internal_errors(true); // Disable libxml errors and warnings
+$dom->loadHTML($body);
+libxml_clear_errors();
     //DOMElement
     $images = $dom->getElementsByTagName("img");
     
@@ -112,7 +120,15 @@ function local_diagnostic($id){
 
 
     for ($i = 0; $i < count($metas); $i++){
-        $temp = $metas->item($i)->attributes->getNamedItem("name")->value;
+        $temp;
+        if($metas->item($i)->attributes->getNamedItem("name") != null){
+            $temp = $metas->item($i)->attributes->getNamedItem("name")->value;
+        } else if($metas->item($i)->attributes->getNamedItem("property") != null) {
+            $temp = $metas->item($i)->attributes->getNamedItem("property")->value;
+        } else {
+            $temp = null;
+        }
+        
 
         if($temp == "description"){$output->is_meta_description = true;}
         if($temp == "og:description"){$output->is_meta_og_description = true;}
@@ -124,7 +140,7 @@ function local_diagnostic($id){
         if($temp == "og:keywords"){$output->is_meta_og_keywords = true;}
         if($temp == "og:title"){$output->is_meta_og_title = true;}
         if($temp == "og:url"){$output->is_meta_og_url = true;}
-        if($temp == "keywords"){$output->number_of_meta_keywords = substr_count($meta->item(i)->attributes->getNamedItem("content"), ",");}
+        if($temp == "keywords"){$output->number_of_meta_keywords = substr_count($metas->item($i)->attributes->getNamedItem("content")->value, ",");}
         if($temp == "theme-color"){$output->is_meta_theme_color = true;}
         if($temp == "twitter:card"){$output->is_meta_twitter_card = true;}
         if($temp == "twitter:title"){$output->is_meta_twitter_title = true;}
@@ -476,7 +492,7 @@ function loyae_add_meta_tag() {
             //$meta = ($wpdb->get_results( "SELECT * FROM ".$loyae_generated_data))[$id]; //I'm just taking the first element, but you need to index it for the right post
             //echo implode(" ",$meta);
             $q = 'SELECT * FROM ' . $loyae_generated_data . ' WHERE ID = '. get_the_ID();
-            $meta = ($wpdb->get_results($q))[0];
+            $meta = ($wpdb->get_results($q))[0] ?? null;
     
 
 
@@ -554,7 +570,7 @@ function callback($buffer) {
 			
 			preg_match('/data-src="(.*?)"/', $value, $imgurl);
 			
-			$image_url = $imgurl[1];
+			$image_url = $imgurl[1] ?? null;
           
           	//get alt from url in WordPress
     		global $wpdb;   		
