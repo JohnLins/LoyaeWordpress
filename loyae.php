@@ -108,12 +108,14 @@ libxml_clear_errors();
     $output->is_meta_og_keywords = false;
     $output->is_meta_og_title = false;
     $output->is_meta_og_url = false;
-    $output->number_of_meta_keywords = 0;
+    $output->is_meta_og_type = false;
+    $output->is_meta_keywords = false;
     $output->is_meta_theme_color = false;
     $output->is_meta_twitter_card = false;
     $output->is_meta_twitter_title = false;
     $output->is_meta_twitter_description = false;
     $output->is_meta_twitter_image = false;
+    $output->is_meta_twitter_image_alt = false;
     $output->is_meta_twitter_url = false;
     $output->is_meta_apple_mobile_web_app_status_bar_style = false;
     $output->is_meta_apple_mobile_web_app_title = false;
@@ -140,12 +142,14 @@ libxml_clear_errors();
         if($temp == "og:keywords"){$output->is_meta_og_keywords = true;}
         if($temp == "og:title"){$output->is_meta_og_title = true;}
         if($temp == "og:url"){$output->is_meta_og_url = true;}
-        if($temp == "keywords"){$output->number_of_meta_keywords = substr_count($metas->item($i)->attributes->getNamedItem("content")->value, ",");}
+        if($temp == "og:type"){$output->is_meta_og_url = true;}
+        if($temp == "keywords"){$output->is_meta_keywords = true;}
         if($temp == "theme-color"){$output->is_meta_theme_color = true;}
         if($temp == "twitter:card"){$output->is_meta_twitter_card = true;}
         if($temp == "twitter:title"){$output->is_meta_twitter_title = true;}
         if($temp == "twitter:description"){$output->is_meta_twitter_descriptio = true;}
         if($temp == "twitter:image"){$output->is_meta_twitter_image = true;}
+        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image = true;}
         if($temp == "twitter:url"){$output->is_meta_twitter_url = true;}
         if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;}
         if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;}
@@ -176,7 +180,7 @@ function loyae_admin_page() {
 
         echo    '<br/><div><center>
                 <img src="https://www.loyae.com/assets/logos/logo.svg" height="20px;"/> 
-                <h1 style="display:inline-block;">Loyae</h1><br/>
+                <h1 style="display:inline-block;">Loyae </h1> <h6 style="display:inline-block;">V1.01</h6><br/>
                 <br/><hr/><br/>
                 </center></div>';
 
@@ -193,7 +197,7 @@ function loyae_admin_page() {
                                 <tr>
                                 <th></th>
                                 <th>Post</th>
-                                <th>Diagnostic (Free)</th>
+                               <!-- <th>Diagnostic (Free)</th>-->
                                 <th>Image Alt Text</th>
                                 <th>Meta Description</th>
                                 <th>OG Meta Tags</th>
@@ -214,7 +218,7 @@ function loyae_admin_page() {
                                 <td><input type="checkbox" name="'.$id.'_box" class="'.$cat.'"/></td>
                                 <td><a href="' . get_permalink($id) .'">' 
                                 . ($GLOBALS[$cat])[$i]->post_title .' ('.$id.') </a></td>
-                                <td><a href="javascript:diagnose('.$GLOBALS[$cat][$i]->ID.')">🔍</a></td>
+                                <!--<td><a href="javascript:diagnose('.$GLOBALS[$cat][$i]->ID.')">🔍</a></td>-->
 
                                 <td><span>Missing <b>'. ($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .'</b> of '.$temp_local_diagnostic->number_of_imgs.'</span></td>
                             
@@ -223,29 +227,32 @@ function loyae_admin_page() {
                             
 
                                 <td>'.
-                                ($temp_local_diagnostic->is_meta_og_description==true?"<b>Has</b>":"<b>Missing</b>"). " og:description<br/>".
-                                ($temp_local_diagnostic->is_meta_og_image==true?"<b>Has</b>":"<b>Missing</b>"). " og:image<br/>".
-                                ($temp_local_diagnostic->is_meta_og_image_width==true?"<b>Has</b>":"<b>Missing</b>"). " og:image:width<br/>".
-                                ($temp_local_diagnostic->is_meta_og_image_height==true?"<b>Has</b>":"<b>Missing</b>"). " og:image:height<br/>".
-                                ($temp_local_diagnostic->is_meta_og_image_type==true?"<b>Has</b>":"<b>Missing</b>"). " og:image:type<br/>".
-                                ($temp_local_diagnostic->is_meta_og_site_name==true?"<b>Has</b>":"<b>Missing</b>"). " og:site_name<br/>".
-                                ($temp_local_diagnostic->is_meta_og_keywords==true?"<b>Has</b>":"<b>Missing</b>"). " og:keywords<br/>".
-                                ($temp_local_diagnostic->is_meta_og_title==true?"<b>Has</b>":"<b>Missing</b>"). " og:title<br/>".
-                                ($temp_local_diagnostic->is_meta_og_url==true?"<b>Has</b>":"<b>Missing</b>"). " og:url<br/>"
+                                ($temp_local_diagnostic->is_meta_og_description==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:description<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_width==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image:width<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_height==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image:height<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_type==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image:type<br/>".
+                                ($temp_local_diagnostic->is_meta_og_site_name==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:site_name<br/>".
+                                ($temp_local_diagnostic->is_meta_og_keywords==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:keywords<br/>".
+                                ($temp_local_diagnostic->is_meta_og_title==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:title<br/>".
+                                ($temp_local_diagnostic->is_meta_og_url==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:url<br/>".
+                                ($temp_local_diagnostic->is_meta_og_type==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:type<br/>"
                                 .'</td>
                             
 
 
 
                                 <td>'.
-                                ($temp_local_diagnostic->is_meta_og_description==true?"Has":"missing"). "<br/>".
-                                ($temp_local_diagnostic->is_meta_og_image==true?"Has":"missing"). "<br/>".
-                                ($temp_local_diagnostic->is_meta_og_image_width==true?"Has":"missing"). "<br/>".
-                                ($temp_local_diagnostic->is_meta_og_image_height==true?"Has":"missing"). "<br/>".
-                                ($temp_local_diagnostic->is_meta_og_image_type==true?"Has":"missing"). "<br/>".
-                                ($temp_local_diagnostic->is_meta_og_site_name==true?"Has":"missing"). "<br/>".
-                                ($temp_local_diagnostic->is_meta_og_keywords==true?"Has":"missing"). "<br/>"
-
+                                ($temp_local_diagnostic->is_meta_keywords==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " keywords<br/>".
+                                ($temp_local_diagnostic->is_meta_theme_color==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " theme-color<br/>".
+                                ($temp_local_diagnostic->is_meta_twitter_card==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " twitter:card<br/>".
+                                ($temp_local_diagnostic->is_meta_twitter_title==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " twitter:title<br/>".
+                                ($temp_local_diagnostic->is_meta_twitter_description==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " twitter:description<br/>".
+                                ($temp_local_diagnostic->is_meta_twitter_image==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " twitter:image<br/>".
+                                ($temp_local_diagnostic->is_meta_twitter_image_alt==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " twitter:image:alt<br/>".
+                                ($temp_local_diagnostic->is_meta_twitter_url==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " twitter:url<br/>".
+                                ($temp_local_diagnostic->is_meta_apple_mobile_web_app_status_bar_style==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " apple-mobile-web-app-status-bar-style<br/>".
+                                ($temp_local_diagnostic->is_meta_apple_mobile_web_app_title==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " apple-mobile-web-app-title<br/>"
                                 .'</td>
                                
 
@@ -309,67 +316,59 @@ function loyae_admin_page() {
 
 
 
-class Form {
-    public $id;
-    public $alt;
-    public $description;
-    public $keywords;
-    public $og;
-    public $essential;
-    public $nonessential;
-}
-
 
 
  class GeneratedMeta {
     public $loyae_description;
     public $loyae_keywords;
-    /*public $og;
-    public $essential;
-    public $nonessential;*/
-    
-    public $loyae_author;
-    public $loyae_date;
-    public $loyae_title;
+
+    public $loyae_alt;
  }
 
-
- /*
- <meta name='og:title' content='The Rock'>
-<meta name='og:type' content='movie'>
-<meta name='og:url' content='http://www.imdb.com/title/tt0117500/'>
-<meta name='og:image' content='http://ia.media-imdb.com/rock.jpg'>
-<meta name='og:site_name' content='IMDb'>
-<meta name='og:description' content='A group of U.S. Marines, under command of...'>
-*/
-  /*
-            <meta property="article:published_time" content="2019-05-12 10:00" />
-<meta property="article:modified_time" content="2019-09-18 18:00" />
-<meta property="article:expiration_time" content="2119-05-12 10:00" /> 
-<meta property="article:author" content="Shark" />
-<meta property="article:publisher" content="https://www.facebook.com/SharkCoder" />
-<meta property="article:section" content="HTML" />
-<meta property="article:tag" content="tag1, tag2" />
-<meta property="article:tag" content="tag3" />
-*/
  // add_post_meta( $GLOBALS['posts'][0], 'description', 'Loyae Meta Des', false);
 
-function get_generated_meta($form){
-    $post_text = wp_strip_all_tags(apply_filters('the_content', get_post_field('post_content', $form->id)));
+function get_generated_meta($id){
+    $post_text = wp_strip_all_tags(apply_filters('the_content', get_post_field('post_content', $id)));
 
     //put into meta API
     $meta = new GeneratedMeta();
 
     //RUN IT THROUGH THE API HERE
-    $post_class = get_post($form->id);
+    $post_class = get_post($id);
+   // $diagnostic = ;
+    $meta->ID = $id;
+    $meta->loyae_description = (local_diagnostic($id)->is_meta_description) ? 'DES'.$post_text : "<NULL>";
+    $meta->loyae_keywords = (local_diagnostic($id)->is_meta_keywords) ? "KEY1, KEY2, KEY3" : "<NULL>";
 
-    $meta->ID = $form->id;
-    $meta->loyae_description = ($form->description) ? 'DES'.$post_text : "<NULL>";
-    $meta->loyae_keywords = ($form->keywords) ? "KEY1, KEY2, KEY3" : "<NULL>";
-    $meta->loyae_author = ($form->essential) ? $post_class->post_author : "<NULL>";
-    $meta->loyae_date = ($form->essential) ? $post_class->post_date : "<NULL>";
-    $meta->loyae_title = ($form->essential) ? $post_class->post_title : "<NULL>";
+   
+    $temp_loyae_alt = array();
     
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true); 
+    $dom->loadHTML($post_class->post_content);
+    libxml_clear_errors();
+    $images = $dom->getElementsByTagName('img');
+    foreach ($images as $image) {
+        $src = $image->getAttribute('src');
+        //add to map where src is the key
+        $temp_loyae_alt[$src] = "ALT for: " . $src;
+    }
+
+
+
+
+
+    // $attachments = get_attached_media('', get_the_ID());
+
+    // foreach ($attachments as $attachment) {
+    //     $temp_loyae_alt[$attachment->ID] = "ALT for: " . wp_get_attachment_image_src($attachment->ID, 'full');;      
+    // }
+
+
+
+    $meta->loyae_alt = serialize($temp_loyae_alt);
+        
+
 
     return (array)$meta; //generatedMeta type
 }
@@ -398,9 +397,7 @@ function loyae_form_handler() {
       ID int NOT NULL,
       loyae_description text DEFAULT '' NOT NULL,
       loyae_keywords text DEFAULT '' NOT NULL,
-      loyae_author text DEFAULT '' NOT NULL,
-      loyae_date text DEFAULT '' NOT NULL,
-      loyae_title text DEFAULT '' NOT NULL,
+      loyae_alt text DEFAULT '' NOT NULL, 
       PRIMARY KEY (ID)
     ) $charset_collate;";
     
@@ -414,43 +411,17 @@ function loyae_form_handler() {
     status_header(200);
     print_r($_POST);
     echo '<br/><br/>';
-        echo "\n Last Optimized" . date('Y-m-d H:i:s') . "<br/><br/>";
+    echo "\n Last Optimized" . date('Y-m-d H:i:s') . "<br/><br/>";
 
         $keys = array_keys($_POST); 
-        $form = new Form();
-        $form->id=(int)substr($keys[0], 0, strpos($keys[0], "_"));
-        foreach($keys as $p){
+        $form_id=(int)substr($keys[0], 0, strpos($keys[0], "_"));
+        foreach($keys as $p){ //for each page ID that was selected in the form
             $id = (int)substr($p, 0, strpos($p, "_"));
 
-            if($id != $form->id){
-            $wpdb->insert($loyae_generated_data, get_generated_meta($form));
-                $form = null;
-                $form = new Form();
-                $form->id=$id;
-            }
+            if($id != $form_id){
+            $wpdb->insert($loyae_generated_data, get_generated_meta($id));
 
-
-            $type = substr($p, strpos($p, "_") + 1);
-
-            if($type == "alt"){
-                $form->alt = true; 
             }
-            if($type == "description"){
-                $form->description = true; 
-            }
-            if($type == "keywords"){
-                $form->keywords = true; 
-            }
-            if($type == "og"){
-                $form->og = true; 
-            }
-            if($type == "essential"){
-                $form->essential = true; 
-            }
-            if($type == "nonessential"){
-                $form->nonessential = true; 
-            }
-
             
         }
 
@@ -484,9 +455,12 @@ function loyae_add_meta_tag() {
     global $wpdb;
     $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
+
+    
+
     //if you don't specify an ID, it updates all posts
         if(is_single() /*or $id == null*/){
-
+           // $diagnostic = local_diagnostic(get_the_ID());
             //call from the wpdb database instead
             //$meta = get_generated_meta($id);
             //$meta = ($wpdb->get_results( "SELECT * FROM ".$loyae_generated_data))[$id]; //I'm just taking the first element, but you need to index it for the right post
@@ -497,22 +471,23 @@ function loyae_add_meta_tag() {
 
 
             
-            echo '<!--LOYAE: the following meta data has been generated by loyae.com-->';
+            echo '<!--LOYAE: the following meta data has been generated by loyae.com-->'."\n";
             //If it's <NULL> then don't put it in
-            if(metadata_exists('post', get_the_ID(), 'description')){
+            if(/*local_diagnostic(get_the_ID())->is_meta_description &&*/ $meta->loyae_description!="<NULL>"){
                 echo '<meta name="description" content="' . $meta->loyae_description . '" />' . "\n";
             }
 
-            echo '<meta name="og:description" content="' . $meta->loyae_og_description . '" />' . "\n";
-            echo '<meta name="og:image" content="' . "-" . '" />' . "\n";
-            echo '<meta name="og:image:alt" content="' . "-" . '" />' . "\n";
-            echo '<meta name="og:image:width" content="' . "-" . '" />' . "\n";
-            echo '<meta name="og:image:height" content="' . "-" . '" />' . "\n";
-            echo '<meta name="og:image:type" content="' . "-" . '" />' . "\n";
-            echo '<meta name="og:site_name" content="' . "-" . '" />' . "\n";
-            echo '<meta name="og:title" content="' . "-" . '" />' . "\n";
-            echo '<meta name="og:url" content="' . "-" . '" />' . "\n";
-            echo '<meta name="og:keywords" content="' . $meta->loyae_keyword . '" />' . "\n";
+            echo '<meta property="og:description" content="' . '-' . '" />' . "\n";
+            echo '<meta property="og:image" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:image:alt" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:image:width" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:image:height" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:image:type" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:site_name" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:title" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:url" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:type" content="' . "-" . '" />' . "\n";
+            echo '<meta property="og:keywords" content="' . $meta->loyae_keywords . '" />' . "\n";
 
             echo '<meta name="keywords" content="' . "-" . '" />' . "\n";
             echo '<meta name="theme-color" content="' . "-" . '" />' . "\n";
@@ -520,14 +495,54 @@ function loyae_add_meta_tag() {
             echo '<meta name="twitter:title" content="' . "-" . '" />' . "\n";
             echo '<meta name="twitter:description" content="' . "-" . '" />' . "\n";
             echo '<meta name="twitter:image" content="' . "-" . '" />' . "\n";
+            echo '<meta name="twitter:image:alt" content="' . "-" . '" />' . "\n";
             echo '<meta name="twitter:url" content="' . "-" . '" />' . "\n";
             echo '<meta name="apple-mobile-web-app-status-bar-style" content="' . "-" . '" />' . "\n";
             echo '<meta name="apple-mobile-web-app-title" content="' . "-" . '" />' . "\n";
 
-            echo '<meta name="loyae:last_optimized" content="DATE" />' . "\n";
+            echo '<meta property="loyae:optimized" content="DATE" />' . "\n";
+            echo '<meta name="generator" content="https://loyae.com" />' . "\n";
 
-            echo '<!--LOYAE END-->';
+            echo '<!--LOYAE END-->'."\n";
         }
+
+
+        $loyae_alt = unserialize($wpdb->get_results ( "SELECT * FROM ". $wpdb->prefix . "loyae_generated_data" )[0]->loyae_alt);
+
+        // $attachments = get_attached_media('', get_the_ID());
+
+        // foreach ($attachments as $attachment) {
+        //     update_post_meta($attachment->ID, '_wp_attachment_image_alt', $loyae_alt[$attachment->ID]);
+            
+        // }
+
+        $post_content = get_post_field('post_content', get_the_ID()); // Replace $post_id with the ID of the desired post/page
+
+        // Create a DOMDocument object
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($post_content);
+        libxml_use_internal_errors(false);
+
+        // Find all <img> elements in the content
+        $images = $dom->getElementsByTagName('img');
+
+        // Process each image and set the src value as the alt value
+        foreach ($images as $image) {
+            $src = $image->getAttribute('src');
+            $image->setAttribute('alt', $loyae_alt[$src]);
+        }
+
+        // Get the updated post content
+        $updated_post_content = $dom->saveHTML();
+
+        // Update the post with the modified content
+        $update_post_args = array(
+            'ID'           => get_the_ID(),
+            'post_content' => $updated_post_content,
+        );
+
+        wp_update_post($update_post_args);
    
 }
 
@@ -554,13 +569,21 @@ add_action( 'wp_head', 'loyae_add_meta_tag');
 
 
 
-
-
+/*
+//unserialize alt from database 
 
 //experimenting--stillb buggy
 
 //puts image url into alt
 function callback($buffer) {	
+
+
+
+
+     global $wpdb;
+    // $loyae_alt=unserialize($wpdb->get_results ( "SELECT * FROM ". $wpdb->prefix . "loyae_generated_data" )->alt);
+
+
 
 	preg_match_all('/<img (.*?)\/>/', $buffer, $images);
 	if(!is_null($images)) {
@@ -573,7 +596,7 @@ function callback($buffer) {
 			$image_url = $imgurl[1] ?? null;
           
           	//get alt from url in WordPress
-    		global $wpdb;   		
+    		//global $wpdb;   		
     		$query_arr  = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE guid='%s';", strtolower( $image_url ) ) );
     		$image_id   = ( ! empty( $query_arr ) ) ? $query_arr[0] : 0;
 
@@ -583,7 +606,7 @@ function callback($buffer) {
 			if(!is_null($images)) {
 				if((!isset($img[1]) || $img[1] == '') || (!isset($img2[1]) || $img2[1] == '')) {
 					
-					$new_img = str_replace('<img alt=\'\'', '<img alt="'.$image_url.':'.$title.'"', $images[0][$index]);
+					$new_img = str_replace('<img', '<img alt="'.$image_id.':'.$title.'"', $images[0][$index]);
 					$buffer = str_replace($images[0][$index], $new_img, $buffer);
 				}
 			}
@@ -600,7 +623,7 @@ function buffer_end() { echo callback(ob_get_clean()); }
 add_action('wp', 'buffer_start', 0);
 add_action('wp_footer', 'buffer_end');
 
-
+*/
 
 //   update_post_meta()
 
