@@ -142,14 +142,14 @@ libxml_clear_errors();
         if($temp == "og:keywords"){$output->is_meta_og_keywords = true;}
         if($temp == "og:title"){$output->is_meta_og_title = true;}
         if($temp == "og:url"){$output->is_meta_og_url = true;}
-        if($temp == "og:type"){$output->is_meta_og_url = true;}
+        if($temp == "og:type"){$output->is_meta_og_type = true;}
         if($temp == "keywords"){$output->is_meta_keywords = true;}
         if($temp == "theme-color"){$output->is_meta_theme_color = true;}
         if($temp == "twitter:card"){$output->is_meta_twitter_card = true;}
         if($temp == "twitter:title"){$output->is_meta_twitter_title = true;}
-        if($temp == "twitter:description"){$output->is_meta_twitter_descriptio = true;}
+        if($temp == "twitter:description"){$output->is_meta_twitter_description = true;}
         if($temp == "twitter:image"){$output->is_meta_twitter_image = true;}
-        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image = true;}
+        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image_alt = true;}
         if($temp == "twitter:url"){$output->is_meta_twitter_url = true;}
         if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;}
         if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;}
@@ -542,7 +542,9 @@ function loyae_add_meta_tag() {
             'post_content' => $updated_post_content,
         );
 
+        remove_action( 'post_updated', 'wp_save_post_revision' );
         wp_update_post($update_post_args);
+        add_action( 'post_updated', 'wp_save_post_revision' );
    
 }
 
