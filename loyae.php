@@ -301,8 +301,60 @@ function loyae_admin_page() {
                 Non-Essential Tags: <input type="checkbox"/>
 
                 <br/></center>-->
+
+
+
+
+
+                <!--payment-->
+                <div id="outcard">
+                <div id="card-contain">
+                <div style="text-align: left;">
+                <div class="input-label">First Name</div>
+                <input type="text" name="fname" autofocus/>
+                <br/><br/>
+
+                <div class="input-label">Last Name</div>
+                <input type="text" name="lname"/>
+                <br/><br/>
+
+                <div class="input-label">Email</div>
+                <input type="text" name="email"/>
+                <br/><br/>
+
+                <div class="input-label">Card Number </div>
+                <input type="number" name="number" maxlength="16" placeholder="• • • •   • • • •   • • • •   • • • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <br/><br/>
+
+                <div class="input-label">CVC</div>
+                <input type="number" name="cvc" maxlength="3" style="width: 60px;" placeholder="• • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <br/><br/>
+
+                <div class="input-label">Expiration Year</div>
+                <input type="number" name="expy" maxlength="4" style="width: 80px;" placeholder="20 • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <br/><br/>
+
+                <div class="input-label">Expiration month</div>
+                <input type="number" name="expm" maxlength="2" style="width: 50px;" placeholder="• •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+
+
+                <br/><br/>
+                <div id="auth-logo">
+                <a href="https://www.authorize.net/">
+                <img src="https://www.authorize.net/content/dam/anet-redesign/reseller/authorizenet-200x50.png" border="0" alt="Authorize.net Logo" width="100" height="25"/>
+                </a>
+                </div>
+                </div>
+                </div>
+                </div>
+
+
+
+
+
+
                 <br/><center>
-                <input type="submit" name="optimize" value="optimize" />
+                <input type="submit" name="optimize" value="Optimize ($0.00)" />
                 </center>
                 </form>';
 
@@ -731,5 +783,39 @@ add_action('wp_footer', 'buffer_end');
         input[type="submit"]:hover {
             filter: brightness(95%);
             cursor: pointer;
+        }
+
+        /*payment style*/
+        input[type=text], input[type=number] {
+            border-radius: 5px;
+            background-color:;
+            border: 1px lightcoral solid;
+            background-color:  #fdf1f1;
+            height: 30px;
+            padding: 5px;
+            border: 2px;
+        }
+
+        #auth-logo {
+            float: right;
+        }
+
+        #card-contain {
+            height: auto;
+            width: auto;
+            position:relative;
+            display: inline-block;
+            border: 2px lightcoral solid;
+            padding: 10px;
+            border-radius: 7px; 
+        }
+
+        #outcard {
+            display: flex;
+            justify-content: center;
+        }
+
+        ::placeholder{
+            color: lightcoral;
         }
 </style>
