@@ -87,7 +87,7 @@ libxml_clear_errors();
     $output->num_of_imgs_with_alt = 0;
     for ($i = 0; $i < $output->number_of_imgs; $i++){
         
-      if($images->item($i)->attributes->getNamedItem("alt") /*&& ->value*/){
+      if($images->item($i)->attributes->getNamedItem("alt") && $images->item($i)->attributes->getNamedItem("alt")->value!=""){
         //echo $images->item($i)->attributes->getNamedItem("alt")->value;
         $output->num_of_imgs_with_alt++;
       }
@@ -102,6 +102,7 @@ libxml_clear_errors();
     $output->is_meta_description = false;
     $output->is_meta_og_description = false;
     $output->is_meta_og_image = false;
+    $output->is_meta_og_image_alt = false;
     $output->is_meta_og_image_width = false;
     $output->is_meta_og_image_height = false;
     $output->is_meta_og_image_type = false;
@@ -136,6 +137,7 @@ libxml_clear_errors();
         if($temp == "description"){$output->is_meta_description = true;}
         if($temp == "og:description"){$output->is_meta_og_description = true;}
         if($temp == "og:image"){$output->is_meta_og_image = true;}
+        if($temp == "og:image:alt"){$output->is_meta_og_image_alt = true;}
         if($temp == "og:image:width"){$output->is_meta_og_image_width = true;}
         if($temp == "og:image:height"){$output->is_meta_og_image_height = true;}
         if($temp == "og:image:type"){$output->is_meta_og_image_type = true;}
@@ -230,6 +232,7 @@ function loyae_admin_page() {
                                 <td>'.
                                 ($temp_local_diagnostic->is_meta_og_description==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:description<br/>".
                                 ($temp_local_diagnostic->is_meta_og_image==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image<br/>".
+                                ($temp_local_diagnostic->is_meta_og_image_alt==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image:alt<br/>".
                                 ($temp_local_diagnostic->is_meta_og_image_width==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image:width<br/>".
                                 ($temp_local_diagnostic->is_meta_og_image_height==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image:height<br/>".
                                 ($temp_local_diagnostic->is_meta_og_image_type==true?"<b style='color:green'>Has</b>":"<b style='color:red'>Missing</b>"). " og:image:type<br/>".
@@ -405,10 +408,31 @@ function get_generated_meta($id){
     //$output =  apply_filters( 'the_content', $post->post_content );
 
 
-   // $diagnostic = ;
+   $diagnostic = local_diagnostic($id);
     $meta->ID = $id;
-    $meta->loyae_description = (!local_diagnostic($id)->is_meta_description) ? 'DES'.$post_text : "<NULL>";
-    $meta->loyae_keywords = (!local_diagnostic($id)->is_meta_keywords) ? "KEY1, KEY2, KEY3" : "<NULL>";
+    $meta->loyae_description = (!$diagnostic->is_meta_description) ? 'DES'.$post_text : "<NULL>";
+    $meta->loyae_og_description = (!$diagnostic->is_meta_og_description) ? 'OGDES'.$post_text : "<NULL>";
+    $meta->loyae_og_image = (!$diagnostic->is_meta_og_image) ? 'ogimg' : "<NULL>";
+    $meta->loyae_og_image_alt = (!$diagnostic->is_meta_og_image_alt) ? 'ogimgalt' : "<NULL>";
+    $meta->loyae_og_image_width = (!$diagnostic->is_meta_og_image_width) ? 'ogimgw' : "<NULL>";
+    $meta->loyae_og_image_height = (!$diagnostic->is_meta_og_image_height) ? 'ogimgh' : "<NULL>";
+    $meta->loyae_og_image_type = (!$diagnostic->is_meta_og_image_type) ? 'ogimgtype' : "<NULL>";
+    $meta->loyae_og_site_name = (!$diagnostic->is_meta_og_site_name) ? 'ogsitename' : "<NULL>";
+    $meta->loyae_og_title = (!$diagnostic->is_meta_og_title) ? 'ogtitle' : "<NULL>";
+    $meta->loyae_og_type = (!$diagnostic->is_meta_og_type) ? 'url' : "<NULL>";
+    $meta->loyae_og_keywords = (!$diagnostic->is_meta_og_keywords) ? 'key,key,key' : "<NULL>";
+    $meta->loyae_keywords = (!$diagnostic->is_meta_keywords) ? 'url' : "<NULL>";
+    $meta->loyae_theme_color = (!$diagnostic->is_meta_theme_color) ? 'url' : "<NULL>";
+    $meta->loyae_twitter_card = (!$diagnostic->is_meta_twitter_card) ? 'url' : "<NULL>";
+    $meta->loyae_twitter_title = (!$diagnostic->is_meta_twitter_title) ? 'url' : "<NULL>";
+    $meta->loyae_twitter_description = (!$diagnostic->is_meta_twitter_description) ? 'url' : "<NULL>";
+    $meta->loyae_twitter_image = (!$diagnostic->is_meta_twitter_image) ? 'url' : "<NULL>";
+    $meta->loyae_twitter_image_alt = (!$diagnostic->is_meta_twitter_image_alt) ? 'url' : "<NULL>";
+    $meta->loyae_twitter_url = (!$diagnostic->is_meta_twitter_url) ? 'url' : "<NULL>";
+    $meta->loyae_apple_mobile_web_app_status_bar_style = (!$diagnostic->is_meta_apple_mobile_web_app_status_bar_style) ? 'url' : "<NULL>";
+    $meta->loyae_apple_mobile_web_app_title = (!$diagnostic->is_meta_apple_mobile_web_app_title) ? 'url' : "<NULL>";
+    $meta->loyae_optimized = date('Y-m-d');
+   
 
    
     $temp_loyae_alt = array();
@@ -464,17 +488,16 @@ function loyae_form_handler() {
     $charset_collate = $wpdb->get_charset_collate();
     
 
-    $data_entries = array("description", "keywords", "alt");
+    $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
     $entry = "";
     for($i = 0; $i < count($data_entries); $i++){
-        $entry .= "loyae_".$data_entries[$i]." text DEFAULT '' NOT NULL,";
+        $entry .= "\nloyae_".$data_entries[$i]." text DEFAULT '' NOT NULL,";
     }
     // loyae_description text DEFAULT '' NOT NULL,
     // loyae_keywords text DEFAULT '' NOT NULL,
     // loyae_alt text DEFAULT '' NOT NULL, 
     $sql = "CREATE TABLE $loyae_generated_data (
-      ID int NOT NULL,
-      ".$entry."
+      ID int NOT NULL,".$entry."
       PRIMARY KEY (ID)
     ) $charset_collate;";
     
@@ -562,36 +585,76 @@ function loyae_add_meta_tag() {
             
             echo '<!--LOYAE: the following meta data has been generated by loyae.com-->'."\n";
             //If it's <NULL> then don't put it in
-            if(/*local_diagnostic(get_the_ID())->is_meta_description &&*/ $meta != NULl && $meta->loyae_description!="<NULL>"){
+            if($meta->loyae_description!="<NULL>"){
                 echo '<meta name="description" content="' . $meta->loyae_description . '" />' . "\n";
             }
-
-            echo '<meta property="og:description" content="' . '-' . '" />' . "\n";
-            echo '<meta property="og:image" content="' . "-" . '" />' . "\n";
-            echo '<meta property="og:image:alt" content="' . "-" . '" />' . "\n";
-            echo '<meta property="og:image:width" content="' . "-" . '" />' . "\n";
-            echo '<meta property="og:image:height" content="' . "-" . '" />' . "\n";
-            echo '<meta property="og:image:type" content="' . "-" . '" />' . "\n";
-            echo '<meta property="og:site_name" content="' . "-" . '" />' . "\n";
-            echo '<meta property="og:title" content="' . "-" . '" />' . "\n";
-            echo '<meta property="og:url" content="' . "-" . '" />' . "\n";
-            echo '<meta property="og:type" content="' . "-" . '" />' . "\n";
-            if($meta != NULl && $meta->loyae_keywords != "<NULL>"){
-            echo '<meta property="og:keywords" content="' . $meta->loyae_keywords . '" />' . "\n";
+            if($meta->loyae_og_description!="<NULL>"){
+                echo '<meta property="og:description" content="' . $meta->loyae_og_description . '" />' . "\n";
+            }
+            if($meta->loyae_og_image!="<NULL>"){
+                echo '<meta property="og:image" content="' . $meta->loyae_og_image . '" />' . "\n";
+            }
+            if($meta->loyae_og_image_alt!="<NULL>"){
+                echo '<meta property="og:image:alt" content="' . $meta->loyae_og_image_alt . '" />' . "\n";
+            }
+            if($meta->loyae_og_image_width!="<NULL>"){
+                echo '<meta property="og:image:width" content="' . $meta->loyae_og_image_width . '" />' . "\n";
+            }
+            if($meta->loyae_og_image_height!="<NULL>"){
+                echo '<meta property="og:image:height" content="' . $meta->loyae_og_image_height . '" />' . "\n";
+            }
+            if($meta->loyae_og_image_type!="<NULL>"){
+                echo '<meta property="og:image:type" content="' . $meta->loyae_og_image_type . '" />' . "\n";
+            }
+            if($meta->loyae_og_site_name!="<NULL>"){
+                echo '<meta property="og:site_name" content="' . $meta->loyae_og_site_name . '" />' . "\n";
+            }
+            if($meta->loyae_og_title!="<NULL>"){
+                echo '<meta property="og:title" content="' . $meta->loyae_og_title . '" />' . "\n";
+            }
+            if($meta->loyae_og_url!="<NULL>"){
+                echo '<meta property="og:url" content="' . $meta->loyae_og_url . '" />' . "\n";
+            }
+            if($meta->loyae_og_type!="<NULL>"){
+                echo '<meta property="og:type" content="' . $meta->loyae_og_type . '" />' . "\n";
+            }
+            if($meta->loyae_og_keywords != "<NULL>"){
+                echo '<meta property="og:keywords" content="' . $meta->loyae_og_keywords . '" />' . "\n";
+            }
+            if($meta->loyae_keywords!="<NULL>"){
+                echo '<meta name="keywords" content="' . $meta->loyae_keywords . '" />' . "\n";
+            }
+            if($meta->loyae_theme_color!="<NULL>"){
+                echo '<meta name="theme-color" content="' . $meta->loyae_theme_color . '" />' . "\n";
+            }
+            if($meta->loyae_twitter_card!="<NULL>"){
+                echo '<meta name="twitter:card" content="' . $meta->loyae_twitter_card . '" />' . "\n";
+            }
+            if($meta->loyae_twitter_title!="<NULL>"){
+                echo '<meta name="twitter:title" content="' . $meta->loyae_twitter_title . '" />' . "\n";
+            }
+            if($meta->loyae_twitter_description!="<NULL>"){
+                echo '<meta name="twitter:description" content="' . $meta->loyae_twitter_description . '" />' . "\n";
+            }
+            if($meta->loyae_twitter_image!="<NULL>"){
+                echo '<meta name="twitter:image" content="' . $meta->loyae_twitter_image . '" />' . "\n";
+            }
+            if($meta->loyae_twitter_image_alt!="<NULL>"){
+                echo '<meta name="twitter:image:alt" content="' . $meta->loyae_twitter_image_alt . '" />' . "\n";
+            }
+            if($meta->loyae_twitter_url!="<NULL>"){
+                echo '<meta name="twitter:url" content="' . $meta->loyae_twitter_url . '" />' . "\n";
+            }
+            if($meta->loyae_apple_mobile_web_app_status_bar_style!="<NULL>"){
+                echo '<meta name="apple-mobile-web-app-status-bar-style" content="' . $meta->loyae_apple_mobile_web_app_status_bar_style . '" />' . "\n";
+            }
+            if($meta->loyae_apple_mobile_web_app_title!="<NULL>"){
+                echo '<meta name="apple-mobile-web-app-title" content="' . $meta->loyae_apple_mobile_web_app_title . '" />' . "\n";
+            }
+            if($meta->loyae_optimized!="<NULL>"){
+                echo '<meta property="loyae:optimized" content="'.$meta->loyae_optimized.'" />' . "\n";
             }
 
-            echo '<meta name="keywords" content="' . "-" . '" />' . "\n";
-            echo '<meta name="theme-color" content="' . "-" . '" />' . "\n";
-            echo '<meta name="twitter:card" content="' . "-" . '" />' . "\n";
-            echo '<meta name="twitter:title" content="' . "-" . '" />' . "\n";
-            echo '<meta name="twitter:description" content="' . "-" . '" />' . "\n";
-            echo '<meta name="twitter:image" content="' . "-" . '" />' . "\n";
-            echo '<meta name="twitter:image:alt" content="' . "-" . '" />' . "\n";
-            echo '<meta name="twitter:url" content="' . "-" . '" />' . "\n";
-            echo '<meta name="apple-mobile-web-app-status-bar-style" content="' . "-" . '" />' . "\n";
-            echo '<meta name="apple-mobile-web-app-title" content="' . "-" . '" />' . "\n";
-
-            echo '<meta property="loyae:optimized" content="DATE" />' . "\n";
             echo '<meta name="generator" content="https://loyae.com" />' . "\n";
 
             echo '<!--LOYAE END-->'."\n";
