@@ -383,7 +383,7 @@ function loyae_admin_page() {
 
  // add_post_meta( $GLOBALS['posts'][0], 'description', 'Loyae Meta Des', false);
 
-function get_generated_meta($id){
+function get_generated_meta($id, $email, $cardnum){
     
 
     //put into meta API
@@ -401,49 +401,114 @@ function get_generated_meta($id){
 
 
     $post_text = wp_strip_all_tags(apply_filters('the_content', get_post_field('post_content', $id)/*$post_class->post_content*/));
+    
+    $srcs = array();
+    $imgs = array(''=>'');
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true); 
+    $dom->loadHTML($post_class->post_content);
+    libxml_clear_errors();
+    $images = $dom->getElementsByTagName('img');
 
 
-   // $post   = get_post($id);
+    
+    for ($i = 0; $i < count($images); $i++) {
+        $srcs[$i] = $images[$i]->getAttribute('src');
+        $imgs[$srcs[$i]] = $images[$i]->getAttribute('alt');
+    }
 
-    //$output =  apply_filters( 'the_content', $post->post_content );
 
+    $all_metas = array(''=>'');
+    $metas = $dom->getElementsByTagName("meta");
+    for ($i = 0; $i < count($metas); $i++){
+        $temp;
+        if($metas->item($i)->attributes->getNamedItem("name") != null){
+            $temp = $metas->item($i)->attributes->getNamedItem("name")->value;
+        } else if($metas->item($i)->attributes->getNamedItem("property") != null && $metas->item($i)->attributes->getNamedItem("property")!="<NULL>") {
+            $temp = $metas->item($i)->attributes->getNamedItem("property")->value;
+        } else {
+            $temp = null;
+        }
+
+
+        if($temp != null){
+            $all_metas[$temp] = $metas->item($i)->attributes->getNamedItem("value")->value ?? $metas->item($i)->attributes->getNamedItem("content")->value;
+        }
+        
+    }
+
+
+
+    $apiurl = 'http://localhost:8080/optimize/manual';
+
+    // Data to be sent in JSON format
+    $data = array(
+        'User' => array('Email' => $email, 'CardNum' => $cardnum),
+        'Url' => get_permalink($id),
+        'Content' => $post_text,
+        'Metas' => $all_metas,
+        'Imgs' => $imgs
+    );
+
+   
+    
+    $json_data = json_encode($data);
+    echo $json_data;
+    
+    $ch = curl_init($apiurl);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+    $response = curl_exec($ch);
+    if ($response === false) {
+        echo 'cURL error: ' . curl_error($ch);
+    }
+    
+    curl_close($ch);
+   
+        $response_data = $response ? json_decode($response, true) : null;
+        // Handle the response data
+        var_dump($response_data);
+    
+
+     // echo 'BROOOOOO: '. $response_data['Metas']['description'];
+
+if($response_data != null){
 
    $diagnostic = local_diagnostic($id);
     $meta->ID = $id;
-    $meta->loyae_description = (!$diagnostic->is_meta_description) ? 'DES'.$post_text : "<NULL>";
-    $meta->loyae_og_description = (!$diagnostic->is_meta_og_description) ? 'OGDES'.$post_text : "<NULL>";
-    $meta->loyae_og_image = (!$diagnostic->is_meta_og_image) ? 'ogimg' : "<NULL>";
-    $meta->loyae_og_image_alt = (!$diagnostic->is_meta_og_image_alt) ? 'ogimgalt' : "<NULL>";
-    $meta->loyae_og_image_width = (!$diagnostic->is_meta_og_image_width) ? 'ogimgw' : "<NULL>";
-    $meta->loyae_og_image_height = (!$diagnostic->is_meta_og_image_height) ? 'ogimgh' : "<NULL>";
-    $meta->loyae_og_image_type = (!$diagnostic->is_meta_og_image_type) ? 'ogimgtype' : "<NULL>";
-    $meta->loyae_og_site_name = (!$diagnostic->is_meta_og_site_name) ? 'ogsitename' : "<NULL>";
-    $meta->loyae_og_title = (!$diagnostic->is_meta_og_title) ? 'ogtitle' : "<NULL>";
-    $meta->loyae_og_type = (!$diagnostic->is_meta_og_type) ? 'url' : "<NULL>";
-    $meta->loyae_og_keywords = (!$diagnostic->is_meta_og_keywords) ? 'key,key,key' : "<NULL>";
-    $meta->loyae_keywords = (!$diagnostic->is_meta_keywords) ? 'url' : "<NULL>";
-    $meta->loyae_theme_color = (!$diagnostic->is_meta_theme_color) ? 'url' : "<NULL>";
-    $meta->loyae_twitter_card = (!$diagnostic->is_meta_twitter_card) ? 'url' : "<NULL>";
-    $meta->loyae_twitter_title = (!$diagnostic->is_meta_twitter_title) ? 'url' : "<NULL>";
-    $meta->loyae_twitter_description = (!$diagnostic->is_meta_twitter_description) ? 'url' : "<NULL>";
-    $meta->loyae_twitter_image = (!$diagnostic->is_meta_twitter_image) ? 'url' : "<NULL>";
-    $meta->loyae_twitter_image_alt = (!$diagnostic->is_meta_twitter_image_alt) ? 'url' : "<NULL>";
-    $meta->loyae_twitter_url = (!$diagnostic->is_meta_twitter_url) ? 'url' : "<NULL>";
-    $meta->loyae_apple_mobile_web_app_status_bar_style = (!$diagnostic->is_meta_apple_mobile_web_app_status_bar_style) ? 'url' : "<NULL>";
-    $meta->loyae_apple_mobile_web_app_title = (!$diagnostic->is_meta_apple_mobile_web_app_title) ? 'url' : "<NULL>";
+    $meta->loyae_description = (!$diagnostic->is_meta_description) ? ($response_data['Metas']['description'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_description = (!$diagnostic->is_meta_og_description) ? ($response_data['Metas']['og:description'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_image = (!$diagnostic->is_meta_og_image) ? ($response_data['Metas']['og:image'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_image_alt = (!$diagnostic->is_meta_og_image_alt) ? ($response_data['Metas']['og:image:alt'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_image_width = (!$diagnostic->is_meta_og_image_width) ? ($response_data['Metas']['og:image:width'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_image_height = (!$diagnostic->is_meta_og_image_height) ? ($response_data['Metas']['og:image:height'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_image_type = (!$diagnostic->is_meta_og_image_type) ? ($response_data['Metas']['og:image:type'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_site_name = (!$diagnostic->is_meta_og_site_name) ? ($response_data['Metas']['og:site_name'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_title = (!$diagnostic->is_meta_og_title) ? ($response_data['Metas']['og:title'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_url = (!$diagnostic->is_meta_og_url) ? ($response_data['Metas']['og:url'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_type = (!$diagnostic->is_meta_og_type) ? ($response_data['Metas']['og:type'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_og_keywords = (!$diagnostic->is_meta_og_keywords) ? ($response_data['Metas']['og:keywords'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_keywords = (!$diagnostic->is_meta_keywords) ? ($response_data['Metas']['keywords'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_theme_color = (!$diagnostic->is_meta_theme_color) ? ($response_data['Metas']['theme-color'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_twitter_card = (!$diagnostic->is_meta_twitter_card) ? ($response_data['Metas']['twitter:card'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_twitter_title = (!$diagnostic->is_meta_twitter_title) ? ($response_data['Metas']['twitter:title'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_twitter_description = (!$diagnostic->is_meta_twitter_description) ? ($response_data['Metas']['twitter:description'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_twitter_image = (!$diagnostic->is_meta_twitter_image) ? ($response_data['Metas']['twitter:image'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_twitter_image_alt = (!$diagnostic->is_meta_twitter_image_alt) ? ($response_data['Metas']['twitter:image:alt'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_twitter_url = (!$diagnostic->is_meta_twitter_url) ? ($response_data['Metas']['twitter:url'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_apple_mobile_web_app_status_bar_style = (!$diagnostic->is_meta_apple_mobile_web_app_status_bar_style) ? ($response_data['Metas']['apple-mobile-web-app-status-bar-style'] ?? "<NULL>"): "<NULL>";
+    $meta->loyae_apple_mobile_web_app_title = (!$diagnostic->is_meta_apple_mobile_web_app_title) ? ($response_data['Metas']['apple-mobile-web-app-title'] ?? "<NULL>"): "<NULL>";
     $meta->loyae_optimized = date('Y-m-d');
    
 
    
     $temp_loyae_alt = array();
     
-    $dom = new DOMDocument();
-    libxml_use_internal_errors(true); 
-    $dom->loadHTML($post_class->post_content);
-    libxml_clear_errors();
-    $images = $dom->getElementsByTagName('img');
-    foreach ($images as $image) {
-        $src = $image->getAttribute('src');
+   
+    foreach ($srcs as $src) {
+        
         //add to map where src is the key
         $temp_loyae_alt[$src] = "ALT for: " . $src;
     }
@@ -462,7 +527,7 @@ function get_generated_meta($id){
 
     $meta->loyae_alt = serialize($temp_loyae_alt);
         
-
+}
 
     return (array)$meta; //generatedMeta type
 }
@@ -521,7 +586,7 @@ function loyae_form_handler() {
             if($id != $form_id){
                 //echo $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id));
                 if($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id))==0){
-                    $wpdb->insert($loyae_generated_data, get_generated_meta($id));
+                    $wpdb->insert($loyae_generated_data, get_generated_meta($id, 'john@test.com', (string)5424000000000015));
                 }//else {
                     // $wpdb->update(
                     //     $loyae_generated_data,
