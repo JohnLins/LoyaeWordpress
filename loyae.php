@@ -185,10 +185,11 @@ function loyae_admin_page() {
                 <img src="'.$GLOBALS['base64logo'].'" height="20px;"/> 
                 <h1 style="display:inline-block;">Loyae </h1> <h6 style="display:inline-block;">V1.01</h6><br/>
                 <br/><hr/><br/>
+                <h2 id="loader" style="display:none">Loading... Please be patient as we diagnose your entire website (this can take some time)</h2>
+                <script>const loader = document.getElementById("loader"); loader.style.display = "block";</script>
                 </center></div>';
 
 
-        //latest 20 posts, not quite working yet
         $post_table = '<form action="admin-post.php" method="post">
                        <input type="hidden" name="action" value="loyae_form">';
 
@@ -281,10 +282,7 @@ function loyae_admin_page() {
         
 
         $post_table .= '<script>
-                        function diagnose(id){
-                        window.alert(id);
-                        } 
-                        
+
                         function toggle(source, name) {
                             checkboxes = document.getElementsByClassName(name);
                             for(var i=0, n=checkboxes.length;i<n;i++) {
@@ -367,6 +365,7 @@ function loyae_admin_page() {
             echo  $_POST['check_alt'];
         }
     
+        echo '<script>loader.style.display = "none";</script>';
        
 }
 
@@ -384,7 +383,11 @@ function loyae_admin_page() {
  // add_post_meta( $GLOBALS['posts'][0], 'description', 'Loyae Meta Des', false);
 
 function get_generated_meta($id, $email, $cardnum){
+    $rootapiurl = "http://localhost:8080";
     
+   
+
+
 
     //put into meta API
     $meta = new GeneratedMeta();
@@ -439,7 +442,7 @@ function get_generated_meta($id, $email, $cardnum){
 
 
 
-    $apiurl = 'http://localhost:8080/optimize/manual';
+    $apiurl = $rootapiurl.'/optimize/manual';
 
     // Data to be sent in JSON format
     $data = array(
@@ -504,18 +507,18 @@ if($response_data != null){
    
 
    
-    $temp_loyae_alt = array();
+   // $temp_loyae_alt = array();
     
    
-    foreach ($srcs as $src) {
+   // foreach ($srcs as $src) {
         
         //add to map where src is the key
-        $temp_loyae_alt[$src] = "ALT for: " . $src;
-    }
+        //$temp_loyae_alt[$src] = "ALT for: " . $src;
+   // }
 
 
 
-
+   
 
     // $attachments = get_attached_media('', get_the_ID());
 
@@ -525,7 +528,7 @@ if($response_data != null){
 
 
 
-    $meta->loyae_alt = serialize($temp_loyae_alt);
+    $meta->loyae_alt = serialize($response_data['Alts']);
         
 }
 
@@ -541,80 +544,98 @@ if($response_data != null){
 
 function loyae_form_handler() {
 
-    global $wpdb;
-    $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
-
-
-////////////////   remove later
-    // $wpdb->query("DROP TABLE IF EXISTS $loyae_generated_data");
-///////////////
-
-
-    $charset_collate = $wpdb->get_charset_collate();
-    
-
-    $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
-    $entry = "";
-    for($i = 0; $i < count($data_entries); $i++){
-        $entry .= "\nloyae_".$data_entries[$i]." text DEFAULT '' NOT NULL,";
-    }
-    // loyae_description text DEFAULT '' NOT NULL,
-    // loyae_keywords text DEFAULT '' NOT NULL,
-    // loyae_alt text DEFAULT '' NOT NULL, 
-    $sql = "CREATE TABLE $loyae_generated_data (
-      ID int NOT NULL,".$entry."
-      PRIMARY KEY (ID)
-    ) $charset_collate;";
-    
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    dbDelta( $sql );
-
-
-
-
-
-    status_header(200);
-    print_r($_POST);
-    echo '<br/><br/>';
-    echo "\n Last Optimized" . date('Y-m-d H:i:s') . "<br/><br/>";
-
-        $keys = array_keys($_POST); 
-        $form_id=(int)substr($keys[0], 0, strpos($keys[0], "_"));
-        foreach($keys as $p){ //for each page ID that was selected in the form
-            $id = (int)substr($p, 0, strpos($p, "_"));
-
-            if($id != $form_id){
-                //echo $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id));
-                if($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id))==0){
-                    $wpdb->insert($loyae_generated_data, get_generated_meta($id, 'john@test.com', (string)5424000000000015));
-                }//else {
-                    // $wpdb->update(
-                    //     $loyae_generated_data,
-                    //     get_generated_meta($id),
-                    //     array('ID' => $id),
-                    //     array_fill( 0, count($data_entries), "%s"), 
-                    //     array( '%d' )
-                    // );
-               // }
-
-            }
+    if($_POST['email']!= "" && $_POST['fname'] != "" && $_POST['lname'] != "" && $_POST['number'] != "" && $_POST['cvc'] != "" && $_POST['expm'] != "" && $_POST['expy'] != "" /*&& amount >= 1*/){
             
-        }
-
-
-    echo '<br/><br/>';
-    $result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data );
-    foreach ( $result as $print )   {
     
-        print_r($print);
-    }
+        //echo $_POST['email'];
+        $fund = file_get_contents("https://api.loyae.com/optimize/fund?email=".$_POST['email']."&fname=".$_POST['fname']."&lname=".$_POST['lname']."&number=".$_POST['number']."&cvc=".$_POST['cvc']."&expm=".$_POST['expm']."&expy=".$_POST['expy']."&amount="."10"."&discount=NONE");
 
+        $funddata= json_decode($fund);
         
-//}
-//print_r($wpdb->tables() );
-    //request handlers should exit() when they complete their task
-    echo '<br/><br/>';
-    exit("Done :)");
+        
+        if ($funddata != null && $funddata->Err === false){
+                    
+            
+            global $wpdb;
+            $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
+
+
+        ////////////////   remove later
+            $wpdb->query("DROP TABLE IF EXISTS $loyae_generated_data");
+        ///////////////
+
+
+            $charset_collate = $wpdb->get_charset_collate();
+            
+
+            $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
+            $entry = "";
+            for($i = 0; $i < count($data_entries); $i++){
+                $entry .= "\nloyae_".$data_entries[$i]." text DEFAULT '' NOT NULL,";
+            }
+            // loyae_description text DEFAULT '' NOT NULL,
+            // loyae_keywords text DEFAULT '' NOT NULL,
+            // loyae_alt text DEFAULT '' NOT NULL, 
+            $sql = "CREATE TABLE $loyae_generated_data (
+            ID int NOT NULL,".$entry."
+            PRIMARY KEY (ID)
+            ) $charset_collate;";
+            
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            dbDelta( $sql );
+
+
+
+
+
+            status_header(200);
+            print_r($_POST);
+            echo '<br/><br/>';
+            echo "\n Last Optimized" . date('Y-m-d H:i:s') . "<br/><br/>";
+
+            $keys = array_keys($_POST); 
+                $form_id=(int)substr($keys[0], 0, strpos($keys[0], "_"));
+                foreach($keys as $p){ //for each page ID that was selected in the form
+                    $id = (int)substr($p, 0, strpos($p, "_"));
+
+                    if($id != $form_id){
+                        //echo $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id));
+                        if($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id))==0){
+                            $wpdb->insert($loyae_generated_data, get_generated_meta($id, $_POST['email'], (string)($_POST['number'])));
+                        }//else {
+                            // $wpdb->update(
+                            //     $loyae_generated_data,
+                            //     get_generated_meta($id),
+                            //     array('ID' => $id),
+                            //     array_fill( 0, count($data_entries), "%s"), 
+                            //     array( '%d' )
+                            // );
+                    // }
+
+                    }
+                    
+                }
+
+
+            echo '<br/><br/>';
+            $result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data );
+            foreach ( $result as $print )   {
+            
+                print_r($print);
+            }
+
+                
+            //}
+            //print_r($wpdb->tables() );
+            //request handlers should exit() when they complete their task
+            echo '<br/><br/>';
+            exit("Done :)");
+        } else {
+            echo 'There was an error with your payment';
+        }
+    } else {
+        echo 'Please properly enter your card information in its entirety';
+    }
 }
 
 
@@ -735,6 +756,8 @@ function loyae_add_meta_tag() {
         //     update_post_meta($attachment->ID, '_wp_attachment_image_alt', $loyae_alt[$attachment->ID]);
             
         // }
+        
+        print_r($loyae_alt);
 
         $post_content = get_post_field('post_content', get_the_ID()); // Replace $post_id with the ID of the desired post/page
 
