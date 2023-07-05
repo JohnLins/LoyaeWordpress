@@ -40,19 +40,44 @@ function my_menu() {
 
 
 class Diagnostic {
+    public $is_meta_description;
+    public $is_meta_og_description;
+    public $is_meta_og_image;
+    public $is_meta_og_image_alt;
+    public $is_meta_og_image_width;
+    public $is_meta_og_image_height;
+    public $is_meta_og_image_type;
+    public $is_meta_og_site_name;
+    public $is_meta_og_keywords;
+    public $is_meta_og_title;
+    public $is_meta_og_url;
+    public $is_meta_og_type;
+    public $is_meta_keywords;
+    public $is_meta_theme_color;
+    public $is_meta_twitter_card;
+    public $is_meta_twitter_title;
+    public $is_meta_twitter_description;
+    public $is_meta_twitter_image;
+    public $is_meta_twitter_image_alt;
+    public  $is_meta_twitter_url;
+    public $is_meta_apple_mobile_web_app_status_bar_style;
+    public $is_meta_apple_mobile_web_app_title;
     public $number_of_imgs;
     public $num_of_imgs_with_alt;
-    public $is_meta_description;
-    public $number_of_meta_keywords;
-    public $number_of_og_meta;
-    public $number_of_meta;
-    
+    public $cost_to_optimize;
 }
 
 
 
 function local_diagnostic($id){
     $output = new Diagnostic();
+
+    $alt_cost = .05;
+    $description_cost =  0.03;
+    $other_meta_cost = 0.01;
+
+    $cost_to_optimize =3*$description_cost + 2*$alt_cost + 17*$other_meta_cost;
+
 
     //returns the WP_post class whih contains stuff like the post data, author, ect (things you can out in meta tags): https://developer.wordpress.org/reference/classes/wp_post/
     //echo $res;
@@ -96,6 +121,8 @@ libxml_clear_errors();
       }
     }
 
+    $cost_to_optimize += $alt_cost * ($output->number_of_imgs - $output->num_of_imgs_with_alt);
+
 
     
 
@@ -137,33 +164,37 @@ libxml_clear_errors();
         }
         
 
-        if($temp == "description"){$output->is_meta_description = true;}
-        if($temp == "og:description"){$output->is_meta_og_description = true;}
-        if($temp == "og:image"){$output->is_meta_og_image = true;}
-        if($temp == "og:image:alt"){$output->is_meta_og_image_alt = true;}
-        if($temp == "og:image:width"){$output->is_meta_og_image_width = true;}
-        if($temp == "og:image:height"){$output->is_meta_og_image_height = true;}
-        if($temp == "og:image:type"){$output->is_meta_og_image_type = true;}
-        if($temp == "og:site_name"){$output->is_meta_og_site_name = true;}
-        if($temp == "og:keywords"){$output->is_meta_og_keywords = true;}
-        if($temp == "og:title"){$output->is_meta_og_title = true;}
-        if($temp == "og:url"){$output->is_meta_og_url = true;}
-        if($temp == "og:type"){$output->is_meta_og_type = true;}
-        if($temp == "keywords"){$output->is_meta_keywords = true;}
-        if($temp == "theme-color"){$output->is_meta_theme_color = true;}
-        if($temp == "twitter:card"){$output->is_meta_twitter_card = true;}
-        if($temp == "twitter:title"){$output->is_meta_twitter_title = true;}
-        if($temp == "twitter:description"){$output->is_meta_twitter_description = true;}
-        if($temp == "twitter:image"){$output->is_meta_twitter_image = true;}
-        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image_alt = true;}
-        if($temp == "twitter:url"){$output->is_meta_twitter_url = true;}
-        if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;}
-        if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;}
+        if($temp == "description"){$output->is_meta_description = true;$cost_to_optimize-=$description_cost;}
+        if($temp == "og:description"){$output->is_meta_og_description = true;$cost_to_optimize-=$description_cost;}
+        if($temp == "og:image"){$output->is_meta_og_image = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "og:image:alt"){$output->is_meta_og_image_alt = true;$cost_to_optimize-=$alt_cost;}
+        if($temp == "og:image:width"){$output->is_meta_og_image_width = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "og:image:height"){$output->is_meta_og_image_height = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "og:image:type"){$output->is_meta_og_image_type = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "og:site_name"){$output->is_meta_og_site_name = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "og:keywords"){$output->is_meta_og_keywords = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "og:title"){$output->is_meta_og_title = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "og:url"){$output->is_meta_og_url = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "og:type"){$output->is_meta_og_type = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "keywords"){$output->is_meta_keywords = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "theme-color"){$output->is_meta_theme_color = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "twitter:card"){$output->is_meta_twitter_card = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "twitter:title"){$output->is_meta_twitter_title = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "twitter:description"){$output->is_meta_twitter_description = true;$cost_to_optimize-=$description_cost;}
+        if($temp == "twitter:image"){$output->is_meta_twitter_image = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image_alt = true;$cost_to_optimize-=$alt_cost;}
+        if($temp == "twitter:url"){$output->is_meta_twitter_url = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;$cost_to_optimize-=$other_meta_cost;}
+        if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;$cost_to_optimize-=$other_meta_cost;}
 
 
     }
 
+$output->cost_to_optimize = round($cost_to_optimize,2);
 
+if(abs($output->cost_to_optimize) < .01){
+    $output->cost_to_optimize = 0.00;
+}
 
 //update_post_meta($attach_id, '_wp_attachment_image_alt', $alt);
 // $attach_id: it is the image post id.
@@ -191,7 +222,10 @@ function loyae_admin_page() {
                 <h1 style="display:inline-block;">Loyae </h1> <h6 style="display:inline-block;">V1.01</h6><br/>
                 <br/><hr/><br/>
                 <h2 id="loader" style="display:none">Loading... Please be patient as we diagnose your entire website (this can take some time)</h2>
-                <script>const loader = document.getElementById("loader"); loader.style.display = "block";</script>
+                <script>
+                const loader = document.getElementById("loader"); loader.style.display = "block";
+                var totalAmount = 0.0;
+                </script>
                 </center></div>';
 
 
@@ -200,7 +234,7 @@ function loyae_admin_page() {
 
         foreach(array("posts", "pages") as $cat){
             if( ! empty( $GLOBALS[$cat] ) ){
-                $post_table .= '<center> Everything: <input type="checkbox" onclick="toggle(this, `'.$cat.'`)" /><br/><br/><div class="table-container"><table class="timecard">
+                $post_table .= '<center> Everything: <input type="checkbox" cost="0" onclick="toggle(this, `'.$cat.'`)" onchange="sumAmount(this)"/><br/><br/><div class="table-container"><table class="timecard">
                                 <caption>'.ucfirst($cat).'</caption>
                                 <thread>
                                 <tr>
@@ -224,7 +258,7 @@ function loyae_admin_page() {
                                 $post_table .= '<tr class="'. $class .'">
 
 
-                                <td><input type="checkbox" name="'.$id.'_box" class="'.$cat.'"/></td>
+                                <td><input type="checkbox" name="'.$id.'_box" class="'.$cat.'" cost="'.$temp_local_diagnostic->cost_to_optimize.'" onchange="sumAmount(this)"/> ($'.$temp_local_diagnostic->cost_to_optimize.')</td>
                                 <td><a href="' . get_permalink($id) .'">' 
                                 . ($GLOBALS[$cat])[$i]->post_title .' ('.$id.') </a></td>
                                 <!--<td><a href="javascript:diagnose('.$GLOBALS[$cat][$i]->ID.')">🔍</a></td>-->
@@ -293,7 +327,39 @@ function loyae_admin_page() {
                             for(var i=0, n=checkboxes.length;i<n;i++) {
                               checkboxes[i].checked = source.checked;
                             }
+                            
                           }
+
+                          function sumAmount(source) {
+                            var temp = 0.0;
+                            checkboxes = document.getElementsByClassName("pages")
+                            for(var i=0, n=checkboxes.length;i<n;i++) {
+                                if(checkboxes[i].checked){
+                                    temp += parseFloat(checkboxes[i].getAttribute("cost"));
+                                }
+                            }
+                            checkboxes = document.getElementsByClassName("posts")
+                            for(var i=0, n=checkboxes.length;i<n;i++) {
+                                if(checkboxes[i].checked){
+                                    temp += parseFloat(checkboxes[i].getAttribute("cost"));
+                                }
+                            }
+
+                            totalAmount = temp.toFixed(2);
+
+                            document.getElementById("optimize").setAttribute("value", "Optimize ($"+totalAmount+")");
+                            document.getElementById("amount").value = totalAmount;
+                          }
+
+                          function optmiz(){
+                            const o = document.getElementById("optimize");
+                            o.disable = true;
+                            o.style.backgroundColor="gray";
+                            o.value = "loading... (this may take a while)";
+                          }
+                          
+
+              
                         </script>';
 
 
@@ -342,9 +408,10 @@ function loyae_admin_page() {
                 <br/><br/>
 
                 <div class="input-label">Expiration month</div>
-                <input type="number" name="expm" maxlength="2" style="width: 50px;" placeholder="• •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <input type="number" name="expm" maxlength="2" min="1" max="12" style="width: 50px;" placeholder="• •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
 
-
+                
+                <input type="number" name="amount" id="amount" step="0.01" min="0" style="display:none"/>
                 <br/><br/>
                 <div id="auth-logo">
                 <a href="https://www.authorize.net/">
@@ -474,7 +541,9 @@ function loyae_admin_page() {
 
 
                 <br/><center>
-                <input type="submit" name="optimize" value="Optimize ($0.00)" />
+                <p>By continuing, you agree to the <a href="https://www.loyae.com/terms.pdf">terms</a></p>
+                <br/>
+                <input type="submit" name="optimize" value="Optimize ($0.00)" id="optimize" onclick="return optmiz()"/>
                 </center>
                 </form>';
 
@@ -501,7 +570,7 @@ function loyae_admin_page() {
  // add_post_meta( $GLOBALS['posts'][0], 'description', 'Loyae Meta Des', false);
 
 function get_generated_meta($id, $email, $cardnum){
-    $rootapiurl = "https://api.loyae.com";//"http://localhost:8080";
+    $rootapiurl = "http://localhost:8080";//"https://api.loyae.com";//
     
    
 
@@ -629,7 +698,7 @@ if($response_data != null){
     
    
    foreach ($srcs as $src) {
-        $temp_loyae_alt[$src] = "-";//.$response_data->Alts->$src;
+        $temp_loyae_alt[$src] = $response_data['Alts'][$src];
    }
    
   //////////test////////////////
@@ -675,9 +744,9 @@ if($response_data != null){
 
 function loyae_form_handler() {
 
-    if($_POST['email']!= "" && $_POST['fname'] != "" && $_POST['lname'] != "" && $_POST['number'] != "" && $_POST['cvc'] != "" && $_POST['expm'] != "" && $_POST['expy'] != "" /*&& amount >= 1*/){
+    if($_POST['email']!= "" && $_POST['fname'] != "" && $_POST['lname'] != "" && $_POST['number'] != "" && $_POST['cvc'] != "" && $_POST['expm'] != "" && $_POST['expy'] != "" && $_POST['amount'] >= 0.2){
             
-    $fundurl = "https://api.loyae.com/optimize/fund?email=".$_POST['email']."&fname=".$_POST['fname']."&lname=".$_POST['lname']."&number=".$_POST['number']."&cvc=".$_POST['cvc']."&expm=".$_POST['expm']."&expy=".$_POST['expy']."&amount="."10"."&discount=NONE";
+    $fundurl = "https://api.loyae.com/optimize/fund?email=".$_POST['email']."&fname=".$_POST['fname']."&lname=".$_POST['lname']."&number=".$_POST['number']."&cvc=".$_POST['cvc']."&expm=".$_POST['expm']."&expy=".$_POST['expy']."&amount=".$_POST['amount']."&discount=NONE";
        // echo '<script>window.alert('.$fundurl.')</script>';
        $funddata = null;
         $fund = wp_remote_get($fundurl);
@@ -700,6 +769,8 @@ function loyae_form_handler() {
 
             $charset_collate = $wpdb->get_charset_collate();
             
+            echo "<span style='color:red;font-size: 50px;'>****DO NOT CLOSE THIS PAGE UNTIL IT HAS FINISHED LOADING****</span><br/>";
+            echo "<span style='color:yellow;font-size: 20px;'>**IF THIS OPTIMIZATION DISFIGURES PAGES IN ANY WAY, DISABLE IT SAFELY AND CONTACT US AT contact@loyae.com**</span><br/>";
 
             $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
             $entry = "";
@@ -724,7 +795,7 @@ function loyae_form_handler() {
             status_header(200);
             print_r($_POST);
             echo '<br/><br/>';
-            echo "\n Last Optimized" . date('Y-m-d H:i:s') . "<br/><br/>";
+            echo "\n Date: " . date('Y-m-d H:i:s') . "<br/><br/>";
 
             $keys = array_keys($_POST); 
                 $form_id=(int)substr($keys[0], 0, strpos($keys[0], "_"));
@@ -786,11 +857,12 @@ function loyae_add_meta_tag() {
     global $wpdb;
     $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
-
+    
     
 
     //if you don't specify an ID, it updates all posts
         if(is_single() or is_page()/*or $id == null*/){
+            $loyae_alt = NULL;
            // $diagnostic = local_diagnostic(get_the_ID());
             //call from the wpdb database instead
             //$meta = get_generated_meta($id);
@@ -877,12 +949,15 @@ function loyae_add_meta_tag() {
             echo '<meta name="generator" content="https://loyae.com" />' . "\n";
 
             echo '<!--LOYAE END-->'."\n";
+
+            $loyae_alt = unserialize($meta->loyae_alt);
         }
    
 
 
-        $loyae_alt = unserialize($wpdb->get_results ( "SELECT * FROM ". $wpdb->prefix . "loyae_generated_data" )[0]->loyae_alt);
+        //$loyae_alt = unserialize($wpdb->get_results ( "SELECT * FROM ". $wpdb->prefix . "loyae_generated_data" )[0]->loyae_alt);
 
+        
         // $attachments = get_attached_media('', get_the_ID());
 
         // foreach ($attachments as $attachment) {
@@ -890,10 +965,10 @@ function loyae_add_meta_tag() {
             
         // }
         
-        print_r($loyae_alt);
-        echo 'THING: ';
-        echo $loyae_alt['https://s-qmdygy6lwg7sl.eu1.wpsandbox.org/wp-content/uploads/2023/07/image-1024x682.png'];
-
+         //print_r($loyae_alt);
+        // echo 'THING: ';
+        // echo $loyae_alt['http://localhost:7070/wordpress/wordpress/wp-content/uploads/2023/07/image-1.png'];
+        // echo 'OKAY';
         $post_content = get_post_field('post_content', get_the_ID()); // Replace $post_id with the ID of the desired post/page
 
         // Create a DOMDocument object
@@ -908,7 +983,9 @@ function loyae_add_meta_tag() {
         // Process each image and set the src value as the alt value
         foreach ($images as $image) {
             $src = $image->getAttribute('src');
-            $image->setAttribute('alt', 'TH');//$loyae_alt[$src]
+            if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
+                $image->setAttribute('alt', $loyae_alt[$src]);
+            }
         }
 
         // Get the updated post content
