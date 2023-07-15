@@ -807,10 +807,10 @@ function loyae_form_handler() {
 
             $charset_collate = $wpdb->get_charset_collate();
             
-            echo "<span style='color:red;font-size: 30px;'><b>DO NOT CLOSE THIS PAGE UNTIL IT SAYS, \"FINISHED LOADING\" (this may take a very long time for large websites)</b></span><br/><br/>";
-            echo "<span style='color:lightcoral;font-size: 20px;'>IF THIS OPTIMIZATION DISFIGURES PAGES IN ANY WAY, DISABLE IT SAFELY AND CONTACT US AT contact@loyae.com</span><br/><br/>";
-            echo "<span style='color:lightcoral;font-size: 20px;'>Sometimes Loyae will deliberately avoid placing some metadata on pages with not enough content. When this happens, please contact us for a partial refund</span><br/><br/>";
-            echo "<br/><span style='font-size: 40px'>LOGS:</span><br/><br/>";
+            echo `<div style="text-align:center; font-family: arial"><span style="color:green;font-size: 25px;">Thank You!</span><br/><br/><span style='color:red;font-size: 25px;'><b>DO NOT CLOSE THIS PAGE UNTIL IT SAYS, \"FINISHED LOADING\" (this may take a very long time for large websites)</b></span><br/><br/>
+            <span style='color:lightcoral;font-size: 20px;'>IF THIS OPTIMIZATION DISFIGURES PAGES IN ANY WAY, DISABLE IT SAFELY AND CONTACT US AT contact@loyae.com</span><br/><br/>
+            <span style='color:lightcoral;font-size: 20px;'>Sometimes Loyae will deliberately avoid placing some metadata on pages with not enough content. When this happens, please contact us for a partial refund</span><br/><br/>
+            <br/><span style='font-size: 40px'>LOGS:</span><br/><br/></div>`;
             $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
             $entry = "";
             for($i = 0; $i < count($data_entries); $i++){
@@ -865,7 +865,7 @@ function loyae_form_handler() {
                 }
 
                 echo "<br/><br/>";
-                echo '<a href="'.get_home_url().'">Home</a>';
+                echo '<div style="text-align: center;"><a href="'.get_home_url().'" style="border: 0; background-color: lightcoral; border-radius: 10px; height: 30px; width: 50px; padding: 10px; color: white;text-decoration: none;">Home</a></div>';
                 echo "<br/><br/>";
                 exit("FINISHED LOADING");
 
