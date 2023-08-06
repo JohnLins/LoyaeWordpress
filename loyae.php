@@ -13,11 +13,6 @@ $GLOBALS['base64logo'] = "data:image/svg+xml;base64,CjwhRE9DVFlQRSBzdmcgUFVCTElD
 
 global $wpdb;
 $wpdb->show_errors();
-//echo "<pre>";print_r($get);echo "</pre>";
-//if (!in_array('loyae_generated_data', $wpdb->tables)) {
-    
-//}
-
  
 
 $args = array(
@@ -33,10 +28,6 @@ add_action('admin_menu', 'my_menu');
 function my_menu() {
     add_menu_page('Loyae Admin', 'Loyae', 'manage_options', 'my-page-slug', 'loyae_admin_page', $GLOBALS['base64logo'], null);
 }
-
-
-
-
 
 
 class Diagnostic {
@@ -86,54 +77,29 @@ function local_diagnostic($id){
     
 
     $cost_to_optimize =3*$GLOBALS['DESCRIPTIONRATE'] + 2*$GLOBALS['ALTRATE'] + 17*$GLOBALS['SIMPLEMETARATE'];
-
-
-    //returns the WP_post class whih contains stuff like the post data, author, ect (things you can out in meta tags): https://developer.wordpress.org/reference/classes/wp_post/
-    //echo $res;
-    /*$res = '
-    <head>
-    <meta name="description" content="Free Web tutorials">
-<meta name="og:title" content="gdd">
-    </head>
-    <body>
-    <div><img src="https://i0.wp.com/www.hadeninteractive.com/wp-content/uploads/2016/11/natureornurture1.png?w=480&ssl=1"/></div><img src="https://sourceforge.net/sflogo.php?type=16&group_id=218559" alt="stuff"/>
-    </body>
-    ';*/
-    /*$res = get_post($id)->post_content;
-
-    $dom = new DomDocument();
-    @ $dom->loadHTML($res);*/
     $response = wp_remote_get( get_permalink($id) );
-$body = wp_remote_retrieve_body( $response );
-$dom = new DOMDocument();
+    $body = wp_remote_retrieve_body( $response );
+    $dom = new DOMDocument();
 
-// Load the HTML into the DOMDocument
-libxml_use_internal_errors(true); // Disable libxml errors and warnings
-$dom->loadHTML($body);
-libxml_clear_errors();
-    //DOMElement
+    
+    libxml_use_internal_errors(true); 
+    $dom->loadHTML($body);
+    libxml_clear_errors();
+    
     $images = $dom->getElementsByTagName("img");
     
 
-    // echo $images->item(0)->attributes->getNamedItem("src")->value . "<br/><br/>";
-    // echo $images->item(1)->attributes->getNamedItem("src")->value . "<br/><br/>";
-
-    //Number of images
     $output->number_of_imgs = count($images);
 
     $output->num_of_imgs_with_alt = 0;
     for ($i = 0; $i < $output->number_of_imgs; $i++){
         
       if($images->item($i)->attributes->getNamedItem("alt") && $images->item($i)->attributes->getNamedItem("alt")->value!=""){
-        //echo $images->item($i)->attributes->getNamedItem("alt")->value;
         $output->num_of_imgs_with_alt++;
       }
     }
 
     $cost_to_optimize += $GLOBALS['ALTRATE'] * ($output->number_of_imgs - $output->num_of_imgs_with_alt);
-
-
-    
 
     $metas = $dom->getElementsByTagName("meta");
     
@@ -205,20 +171,8 @@ if(abs($output->cost_to_optimize) < .01){
     $output->cost_to_optimize = 0.00;
 }
 
-//update_post_meta($attach_id, '_wp_attachment_image_alt', $alt);
-// $attach_id: it is the image post id.
-
-// $alt: the content of image alt text.
-
-// If _wp_attachment_image_alt meta data does not exist, it will be created. Otherwise, it will be updated.
     return $output;
-
 }
-
-
-
-//When the form is submitted, create an array of Form objects
-
 
 
 add_action( 'admin_post_loyae_form', 'loyae_form_handler' );
@@ -405,21 +359,40 @@ function loyae_admin_page() {
                 <br/><br/>
 
                 <div class="input-label">Card Number </div>
-                <input type="number" name="number" maxlength="16" placeholder="• • • •   • • • •   • • • •   • • • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <input type="text" name="number" maxlength="16" placeholder="• • • •   • • • •   • • • •   • • • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
                 <br/><br/>
 
                 <div class="input-label">CVC</div>
-                <input type="number" name="cvc" maxlength="3" style="width: 60px;" placeholder="• • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <input type="text" name="cvc" maxlength="3" style="width: 60px;" placeholder="• • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
                 <br/><br/>
 
                 <div class="input-label">Expiration Year</div>
-                <input type="number" name="expy" maxlength="4" style="width: 80px;" placeholder="20 • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <input type="text" name="expy" maxlength="4" style="width: 80px;" placeholder="20 • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
                 <br/><br/>
 
                 <div class="input-label">Expiration month</div>
-                <input type="number" name="expm" maxlength="2" min="1" max="12" style="width: 50px;" placeholder="• •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <input type="text" name="expm" maxlength="2" min="1" max="12" style="width: 50px;" placeholder="• •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                <br/><br/>
 
-                
+                <div class="input-label">Billing Address</div>
+                <input type="text" name="address"/>
+                <br/><br/>
+
+                <div class="input-label">City</div>
+                <input type="text" name="city"/>
+                <br/><br/>
+
+                <div class="input-label">State</div>
+                <input type="text" name="state"/>
+                <br/><br/>
+
+                <div class="input-label">Zip or Postal Code</div>
+                <input type="text" name="zip"/>
+                <br/><br/>
+                <div class="input-label">Country</div>
+                <input type="text" name="country"/>
+
+
                 <input type="number" name="amount" id="amount" step="0.01" min="0" style="display:none"/>
                 <br/><br/>
                 <div id="auth-logo">
@@ -597,7 +570,7 @@ function loyae_admin_page() {
     public $loyae_alt;
  }
 
- // add_post_meta( $GLOBALS['posts'][0], 'description', 'Loyae Meta Des', false);
+
 
 function loyae_null_case($str){
     if($str == null || $str == ""){
@@ -609,26 +582,13 @@ function loyae_null_case($str){
 
 function get_generated_meta($id, $email, $cardnum){
     $rootapiurl = "https://api.loyae.com";//"http://localhost:8080";
-    
-   
 
-
-
-    //put into meta API
     $meta = new GeneratedMeta();
     $post_class = get_post($id);
-    //RUN IT THROUGH THE API HERE
-    // if(is_single($id)){
-    //     $post_class = get_post($id);
-    // } else {
-    //     $post_class = get_page($id);
-    // }
-    
-    //else get_page()
 
 
 
-    $post_text = wp_strip_all_tags(apply_filters('the_content', get_post_field('post_content', $id)/*$post_class->post_content*/));
+    $post_text = wp_strip_all_tags(apply_filters('the_content', get_post_field('post_content', $id)));
     
     $srcs = array();
     $imgs = array(''=>'');
@@ -669,7 +629,7 @@ function get_generated_meta($id, $email, $cardnum){
 
     $apiurl = $rootapiurl.'/optimize/manual';
 
-    // Data to be sent in JSON format
+    
     $data = array(
         'User' => array('Email' => $email, 'CardNum' => $cardnum),
         'Url' => get_permalink($id),
@@ -681,7 +641,7 @@ function get_generated_meta($id, $email, $cardnum){
    
     
     $json_data = json_encode($data);
-    echo $json_data;
+    
     
     $ch = curl_init($apiurl);
     curl_setopt($ch, CURLOPT_POST, 1);
@@ -695,12 +655,11 @@ function get_generated_meta($id, $email, $cardnum){
     
     curl_close($ch);
    
-        $response_data = $response ? json_decode($response, true) : null;
-        // Handle the response data
-        var_dump($response_data);
+    $response_data = $response ? json_decode($response, true) : null;
+    //echo "Response: ";
+    //var_dump($response_data);
     
 
-     // echo 'BROOOOOO: '. $response_data['Metas']['description'];
 
 if($response_data != null){
 
@@ -731,67 +690,43 @@ if($response_data != null){
     $meta->loyae_optimized = date('Y-m-d');
    
 
-   //GOOD STUFF
-   $temp_loyae_alt = array();
-    
    
-   foreach ($srcs as $src) {
-        $temp_loyae_alt[$src] = $response_data['Alts'][$src];
-   }
-   
-  //////////test////////////////
-//   $temp_loyae_alt = array();
-    
-//   $dom = new DOMDocument();
-//   libxml_use_internal_errors(true); 
-//   $dom->loadHTML($post_class->post_content);
-//   libxml_clear_errors();
-//   $images = $dom->getElementsByTagName('img');
-//   foreach ($images as $image) {
-//       $src = $image->getAttribute('src');
-//       //add to map where src is the key
-//       $temp_loyae_alt[$src] = "ALT for: " . $src;
-  //}
-///////////////////////////////
+//echo "RESPONSE IMGS:". $response_data['Imgs'];
+
+    //$temp_loyae_alt = array();
+
+    $temp_loyae_alt = $response_data['Alts'];
+
+//echo "TEMP_LOYAE_ALT:" .  $temp_loyae_alt;
 
 
-
-   
-
-    // $attachments = get_attached_media('', get_the_ID());
-
-    // foreach ($attachments as $attachment) {
-    //     $temp_loyae_alt[$attachment->ID] = "ALT for: " . wp_get_attachment_image_src($attachment->ID, 'full');;      
-    // }
 
 
 
     $meta->loyae_alt = serialize($temp_loyae_alt);
+
+    //echo "SERTAL:" . $meta->loyae_alt;
         
 }
 
-    return (array)$meta; //generatedMeta type
+    return (array)$meta; 
 }
 
-
-
-
-    
 
 
 
 function loyae_form_handler() {
 
-    if($_POST['email']!= "" && $_POST['fname'] != "" && $_POST['lname'] != "" && $_POST['number'] != "" && $_POST['cvc'] != "" && $_POST['expm'] != "" && $_POST['expy'] != "" && $_POST['amount'] >= 0.2){
+    if($_POST['email']!= "" && $_POST['fname'] != "" && $_POST['lname'] != "" && $_POST['number'] != "" && $_POST['cvc'] != "" && $_POST['expm'] != "" && $_POST['expy'] != "" && $_POST['amount'] >= 0.2 && $_POST['address'] != "" && $_POST['city'] != "" && $_POST['state'] != "" && $_POST['zip'] != "" && $_POST['country'] != ""){
             
-    $fundurl = "https://api.loyae.com/optimize/fund?email=".$_POST['email']."&fname=".$_POST['fname']."&lname=".$_POST['lname']."&number=".$_POST['number']."&cvc=".$_POST['cvc']."&expm=".$_POST['expm']."&expy=".$_POST['expy']."&amount=".$_POST['amount']."&discount=NONE";
-       // echo '<script>window.alert('.$fundurl.')</script>';
+    $fundurl = "https://api.loyae.com/optimize/fund?email=".$_POST['email']."&fname=".$_POST['fname']."&lname=".$_POST['lname']."&number=".$_POST['number']."&cvc=".$_POST['cvc']."&expm=".$_POST['expm']."&expy=".$_POST['expy']."&amount=".$_POST['amount']."&discount=NONE"."&address=".$_POST['address'] ."&city=". $_POST['city'] ."&state=". $_POST['state']."&zip=". $_POST['zip'] ."&country=". $_POST['country'];
+      
        $funddata = null;
         $fund = wp_remote_get($fundurl);
         if(!is_wp_error($fund)){
             $funddata= json_decode(wp_remote_retrieve_body($fund));
         }
-       // print_r($funddata);
+       
         
         if ($funddata != null && $funddata->Err === false){
                     
@@ -800,25 +735,23 @@ function loyae_form_handler() {
             $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
 
-        ////////////////   remove later
-            //$wpdb->query("DROP TABLE IF EXISTS $loyae_generated_data");
-        ///////////////
+            ////////////////   For testing
+                //$wpdb->query("DROP TABLE IF EXISTS $loyae_generated_data");
+            ///////////////
 
 
             $charset_collate = $wpdb->get_charset_collate();
             
-            echo `<div style="text-align:center; font-family: arial"><span style="color:green;font-size: 25px;">Thank You!</span><br/><br/><span style='color:red;font-size: 25px;'><b>DO NOT CLOSE THIS PAGE UNTIL IT SAYS, \"FINISHED LOADING\" (this may take a very long time for large websites)</b></span><br/><br/>
-            <span style='color:lightcoral;font-size: 20px;'>IF THIS OPTIMIZATION DISFIGURES PAGES IN ANY WAY, DISABLE IT SAFELY AND CONTACT US AT contact@loyae.com</span><br/><br/>
-            <span style='color:lightcoral;font-size: 20px;'>Sometimes Loyae will deliberately avoid placing some metadata on pages with not enough content. When this happens, please contact us for a partial refund</span><br/><br/>
-            <br/><span style='font-size: 40px'>LOGS:</span><br/><br/></div>`;
+            echo "<div style='text-align:center; font-family: arial'><span style='color:green;font-size: 25px;'>Thank You!</span><br/><br/><span style='color:red;font-size: 25px;'><b>DO NOT CLOSE THIS PAGE UNTIL IT SAYS, FINISHED LOADING (this may take a very long time for large websites)</b></span><br/><br/>
+            <span style='color:black;font-size: 20px;'>PLEASE CONTACT US AT contact@loyae.com IF ISSUES ARISE</span><br/><br/>
+            <span style='color:black;font-size: 20px;'>Sometimes Loyae will deliberately avoid placing some metadata on pages with not enough content. When this happens, please contact us for a partial refund</span><br/><br/>
+            <br/><span style='font-size: 30px'>LOGS:</span><br/><br/></div>";
             $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
             $entry = "";
             for($i = 0; $i < count($data_entries); $i++){
                 $entry .= "\nloyae_".$data_entries[$i]." text DEFAULT '' NOT NULL,";
             }
-            // loyae_description text DEFAULT '' NOT NULL,
-            // loyae_keywords text DEFAULT '' NOT NULL,
-            // loyae_alt text DEFAULT '' NOT NULL, 
+            
             $sql = "CREATE TABLE $loyae_generated_data (
             ID int NOT NULL,".$entry."
             PRIMARY KEY (ID)
@@ -832,7 +765,7 @@ function loyae_form_handler() {
 
 
             status_header(200);
-            //print_r($_POST);
+            
             echo '<br/><br/>';
             echo "\n Date: " . date('Y-m-d H:i:s') . "<br/><br/>";
 
@@ -842,23 +775,16 @@ function loyae_form_handler() {
                     $id = (int)substr($p, 0, strpos($p, "_"));
 
                     if($id != $form_id){
-                        //echo $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id));
+                        
                         if($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id))==0){
                             $generated_data = get_generated_meta($id, $_POST['email'], (string)($_POST['number']));
-                            if($generated_data->ID != NULL){
+                            //echo "THING:".$generated_data["ID"];
+                            if($generated_data["ID"] != null){
                                 print_r($generated_data);
                                 echo "<br/><br/><br/>";
                                 $wpdb->insert($loyae_generated_data, $generated_data);
                             }
-                        }//else {
-                            // $wpdb->update(
-                            //     $loyae_generated_data,
-                            //     get_generated_meta($id),
-                            //     array('ID' => $id),
-                            //     array_fill( 0, count($data_entries), "%s"), 
-                            //     array( '%d' )
-                            // );
-                    // }
+                        }
 
                     }
                     
@@ -867,20 +793,19 @@ function loyae_form_handler() {
                 echo "<br/><br/>";
                 echo '<div style="text-align: center;"><a href="'.get_home_url().'" style="border: 0; background-color: lightcoral; border-radius: 10px; height: 30px; width: 50px; padding: 10px; color: white;text-decoration: none;">Home</a></div>';
                 echo "<br/><br/>";
+
+
+
+
+                echo '<br/><br/>';
+                $result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data );
+                 print_r($result);
+                 
+    
+
+
                 exit("FINISHED LOADING");
 
-
-            //echo '<br/><br/>';
-            //$result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data );
-            // foreach ( $result as $print )   {
-            
-            //     print_r($print);
-            // }
-
-                
-            //}
-            //print_r($wpdb->tables() );
-            //request handlers should exit() when they complete their task
             
             
         } else {
@@ -895,249 +820,143 @@ function loyae_form_handler() {
 
 
 
-
-
-
-
-
-
 function loyae_add_meta_tag() {
-   // echo 'OKYY';
     global $wpdb;
     $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
-    
-    
-
-    //if you don't specify an ID, it updates all posts
-        if(is_single() or is_page()/*or $id == null*/){
+        if(is_single() or is_page()){
             $loyae_alt = NULL;
-           // $diagnostic = local_diagnostic(get_the_ID());
-            //call from the wpdb database instead
-            //$meta = get_generated_meta($id);
-            //$meta = ($wpdb->get_results( "SELECT * FROM ".$loyae_generated_data))[$id]; //I'm just taking the first element, but you need to index it for the right post
-            //echo implode(" ",$meta);
+         
             $q = 'SELECT * FROM ' . $loyae_generated_data . ' WHERE ID = '. get_the_ID();
             $meta = ($wpdb->get_results($q))[0] ?? NULL;
     
 
             if($meta != NULL){
             
-            echo '<!--LOYAE: the following meta data has been generated by loyae.com-->'."\n";
-            //If it's <NULL> then don't put it in
-            if($meta->loyae_description!="<NULL>"){
-                echo '<meta name="description" content="' . $meta->loyae_description . '" />' . "\n";
-            }
-            if($meta->loyae_og_description!="<NULL>"){
-                echo '<meta property="og:description" content="' . $meta->loyae_og_description . '" />' . "\n";
-            }
-            if($meta->loyae_og_image!="<NULL>"){
-                echo '<meta property="og:image" content="' . $meta->loyae_og_image . '" />' . "\n";
-            }
-            if($meta->loyae_og_image_alt!="<NULL>"){
-                echo '<meta property="og:image:alt" content="' . $meta->loyae_og_image_alt . '" />' . "\n";
-            }
-            if($meta->loyae_og_image_width!="<NULL>"){
-                echo '<meta property="og:image:width" content="' . $meta->loyae_og_image_width . '" />' . "\n";
-            }
-            if($meta->loyae_og_image_height!="<NULL>"){
-                echo '<meta property="og:image:height" content="' . $meta->loyae_og_image_height . '" />' . "\n";
-            }
-            if($meta->loyae_og_image_type!="<NULL>"){
-                echo '<meta property="og:image:type" content="' . $meta->loyae_og_image_type . '" />' . "\n";
-            }
-            if($meta->loyae_og_site_name!="<NULL>"){
-                echo '<meta property="og:site_name" content="' . $meta->loyae_og_site_name . '" />' . "\n";
-            }
-            if($meta->loyae_og_title!="<NULL>"){
-                echo '<meta property="og:title" content="' . $meta->loyae_og_title . '" />' . "\n";
-            }
-            if($meta->loyae_og_url!="<NULL>"){
-                echo '<meta property="og:url" content="' . $meta->loyae_og_url . '" />' . "\n";
-            }
-            if($meta->loyae_og_type!="<NULL>"){
-                echo '<meta property="og:type" content="' . $meta->loyae_og_type . '" />' . "\n";
-            }
-            if($meta->loyae_og_keywords != "<NULL>"){
-                echo '<meta property="og:keywords" content="' . $meta->loyae_og_keywords . '" />' . "\n";
-            }
-            if($meta->loyae_keywords!="<NULL>"){
-                echo '<meta name="keywords" content="' . $meta->loyae_keywords . '" />' . "\n";
-            }
-            if($meta->loyae_theme_color!="<NULL>"){
-                echo '<meta name="theme-color" content="' . $meta->loyae_theme_color . '" />' . "\n";
-            }
-            if($meta->loyae_twitter_card!="<NULL>"){
-                echo '<meta name="twitter:card" content="' . $meta->loyae_twitter_card . '" />' . "\n";
-            }
-            if($meta->loyae_twitter_title!="<NULL>"){
-                echo '<meta name="twitter:title" content="' . $meta->loyae_twitter_title . '" />' . "\n";
-            }
-            if($meta->loyae_twitter_description!="<NULL>"){
-                echo '<meta name="twitter:description" content="' . $meta->loyae_twitter_description . '" />' . "\n";
-            }
-            if($meta->loyae_twitter_image!="<NULL>"){
-                echo '<meta name="twitter:image" content="' . $meta->loyae_twitter_image . '" />' . "\n";
-            }
-            if($meta->loyae_twitter_image_alt!="<NULL>"){
-                echo '<meta name="twitter:image:alt" content="' . $meta->loyae_twitter_image_alt . '" />' . "\n";
-            }
-            if($meta->loyae_twitter_url!="<NULL>"){
-                echo '<meta name="twitter:url" content="' . $meta->loyae_twitter_url . '" />' . "\n";
-            }
-            if($meta->loyae_apple_mobile_web_app_status_bar_style!="<NULL>"){
-                echo '<meta name="apple-mobile-web-app-status-bar-style" content="' . $meta->loyae_apple_mobile_web_app_status_bar_style . '" />' . "\n";
-            }
-            if($meta->loyae_apple_mobile_web_app_title!="<NULL>"){
-                echo '<meta name="apple-mobile-web-app-title" content="' . $meta->loyae_apple_mobile_web_app_title . '" />' . "\n";
-            }
-            if($meta->loyae_optimized!="<NULL>"){
-                echo '<meta property="loyae:optimized" content="'.$meta->loyae_optimized.'" />' . "\n";
-            }
+                echo '<!--LOYAE: the following meta data has been generated by loyae.com-->'."\n";
+                //If it's <NULL> then don't put it in
+                if($meta->loyae_description!="<NULL>"){
+                    echo '<meta name="description" content="' . $meta->loyae_description . '" />' . "\n";
+                }
+                if($meta->loyae_og_description!="<NULL>"){
+                    echo '<meta property="og:description" content="' . $meta->loyae_og_description . '" />' . "\n";
+                }
+                if($meta->loyae_og_image!="<NULL>"){
+                    echo '<meta property="og:image" content="' . $meta->loyae_og_image . '" />' . "\n";
+                }
+                if($meta->loyae_og_image_alt!="<NULL>"){
+                    echo '<meta property="og:image:alt" content="' . $meta->loyae_og_image_alt . '" />' . "\n";
+                }
+                if($meta->loyae_og_image_width!="<NULL>"){
+                    echo '<meta property="og:image:width" content="' . $meta->loyae_og_image_width . '" />' . "\n";
+                }
+                if($meta->loyae_og_image_height!="<NULL>"){
+                    echo '<meta property="og:image:height" content="' . $meta->loyae_og_image_height . '" />' . "\n";
+                }
+                if($meta->loyae_og_image_type!="<NULL>"){
+                    echo '<meta property="og:image:type" content="' . $meta->loyae_og_image_type . '" />' . "\n";
+                }
+                if($meta->loyae_og_site_name!="<NULL>"){
+                    echo '<meta property="og:site_name" content="' . $meta->loyae_og_site_name . '" />' . "\n";
+                }
+                if($meta->loyae_og_title!="<NULL>"){
+                    echo '<meta property="og:title" content="' . $meta->loyae_og_title . '" />' . "\n";
+                }
+                if($meta->loyae_og_url!="<NULL>"){
+                    echo '<meta property="og:url" content="' . $meta->loyae_og_url . '" />' . "\n";
+                }
+                if($meta->loyae_og_type!="<NULL>"){
+                    echo '<meta property="og:type" content="' . $meta->loyae_og_type . '" />' . "\n";
+                }
+                if($meta->loyae_og_keywords != "<NULL>"){
+                    echo '<meta property="og:keywords" content="' . $meta->loyae_og_keywords . '" />' . "\n";
+                }
+                if($meta->loyae_keywords!="<NULL>"){
+                    echo '<meta name="keywords" content="' . $meta->loyae_keywords . '" />' . "\n";
+                }
+                if($meta->loyae_theme_color!="<NULL>"){
+                    echo '<meta name="theme-color" content="' . $meta->loyae_theme_color . '" />' . "\n";
+                }
+                if($meta->loyae_twitter_card!="<NULL>"){
+                    echo '<meta name="twitter:card" content="' . $meta->loyae_twitter_card . '" />' . "\n";
+                }
+                if($meta->loyae_twitter_title!="<NULL>"){
+                    echo '<meta name="twitter:title" content="' . $meta->loyae_twitter_title . '" />' . "\n";
+                }
+                if($meta->loyae_twitter_description!="<NULL>"){
+                    echo '<meta name="twitter:description" content="' . $meta->loyae_twitter_description . '" />' . "\n";
+                }
+                if($meta->loyae_twitter_image!="<NULL>"){
+                    echo '<meta name="twitter:image" content="' . $meta->loyae_twitter_image . '" />' . "\n";
+                }
+                if($meta->loyae_twitter_image_alt!="<NULL>"){
+                    echo '<meta name="twitter:image:alt" content="' . $meta->loyae_twitter_image_alt . '" />' . "\n";
+                }
+                if($meta->loyae_twitter_url!="<NULL>"){
+                    echo '<meta name="twitter:url" content="' . $meta->loyae_twitter_url . '" />' . "\n";
+                }
+                if($meta->loyae_apple_mobile_web_app_status_bar_style!="<NULL>"){
+                    echo '<meta name="apple-mobile-web-app-status-bar-style" content="' . $meta->loyae_apple_mobile_web_app_status_bar_style . '" />' . "\n";
+                }
+                if($meta->loyae_apple_mobile_web_app_title!="<NULL>"){
+                    echo '<meta name="apple-mobile-web-app-title" content="' . $meta->loyae_apple_mobile_web_app_title . '" />' . "\n";
+                }
+                if($meta->loyae_optimized!="<NULL>"){
+                    echo '<meta property="loyae:optimized" content="'.$meta->loyae_optimized.'" />' . "\n";
+                }
 
-            echo '<meta name="generator" content="https://loyae.com" />' . "\n";
+                echo '<meta name="generator" content="https://loyae.com" />' . "\n";
 
-            echo '<!--LOYAE END-->'."\n";
+                echo '<!--LOYAE END-->'."\n";
 
-            $loyae_alt = unserialize($meta->loyae_alt);
-        }
+                $loyae_alt = unserialize($meta->loyae_alt);
+                //echo "LOYAE ALT IN ADD META BEFORE }" . $loyae_alt;
+                //print_r($loyae_alt);
+            }
    
-
-
-        //$loyae_alt = unserialize($wpdb->get_results ( "SELECT * FROM ". $wpdb->prefix . "loyae_generated_data" )[0]->loyae_alt);
+            //echo "LOYAE ALT IN ADD META AFTER }" . $loyae_alt;
+            //print_r($loyae_alt);
 
         
-        // $attachments = get_attached_media('', get_the_ID());
+            $post_content = get_post_field('post_content', get_the_ID());
 
-        // foreach ($attachments as $attachment) {
-        //     update_post_meta($attachment->ID, '_wp_attachment_image_alt', $loyae_alt[$attachment->ID]);
             
-        // }
-        
-         //print_r($loyae_alt);
-        // echo 'THING: ';
-        // echo $loyae_alt['http://localhost:7070/wordpress/wordpress/wp-content/uploads/2023/07/image-1.png'];
-        // echo 'OKAY';
-        $post_content = get_post_field('post_content', get_the_ID()); // Replace $post_id with the ID of the desired post/page
+            $dom = new DOMDocument();
+            libxml_use_internal_errors(true);
+            $dom->loadHTML($post_content);
+            libxml_use_internal_errors(false);
 
-        // Create a DOMDocument object
-        $dom = new DOMDocument();
-        libxml_use_internal_errors(true);
-        $dom->loadHTML($post_content);
-        libxml_use_internal_errors(false);
+            
+            $images = $dom->getElementsByTagName('img');
 
-        // Find all <img> elements in the content
-        $images = $dom->getElementsByTagName('img');
-
-        // Process each image and set the src value as the alt value
-        foreach ($images as $image) {
-            $src = $image->getAttribute('src');
-            if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
-                $image->setAttribute('alt', $loyae_alt[$src]);
+            
+            foreach ($images as $image) {
+                $src = $image->getAttribute('src');
+                if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
+                    $image->setAttribute('alt', $loyae_alt[$src]);
+                }
             }
+
+            
+            $updated_post_content = $dom->saveHTML();
+
+            
+            $update_post_args = array(
+                'ID'           => get_the_ID(),
+                'post_content' => $updated_post_content,
+            );
+
+            remove_action( 'post_updated', 'wp_save_post_revision' );
+            wp_update_post($update_post_args);
+            add_action( 'post_updated', 'wp_save_post_revision' );
         }
-
-        // Get the updated post content
-        $updated_post_content = $dom->saveHTML();
-
-        // Update the post with the modified content
-        $update_post_args = array(
-            'ID'           => get_the_ID(),
-            'post_content' => $updated_post_content,
-        );
-
-        remove_action( 'post_updated', 'wp_save_post_revision' );
-        wp_update_post($update_post_args);
-        add_action( 'post_updated', 'wp_save_post_revision' );
-    }
 }
-
-
-
-//UNUSED-
-// function loyae_add_body_data($id){
-    
-//     update_post_meta( $id, '_wp_attachment_image_alt', 'ALTDATA' );
-//     $my_image_meta = array(
-//         'ID' => $id,			
-//         'post_title' => "ALTDATA",		
-
-//     );
-//     wp_update_post( $my_image_meta );
-// }
-
 
 
 
 
 add_action( 'wp_head', 'loyae_add_meta_tag');
-// add_action('wp_body_open', 'loyae_add_body_data');
 
 
 
-/*
-//unserialize alt from database 
-
-//experimenting--stillb buggy
-
-//puts image url into alt
-function callback($buffer) {	
-
-
-
-
-     global $wpdb;
-    // $loyae_alt=unserialize($wpdb->get_results ( "SELECT * FROM ". $wpdb->prefix . "loyae_generated_data" )->alt);
-
-
-
-	preg_match_all('/<img (.*?)\/>/', $buffer, $images);
-	if(!is_null($images)) {
-		foreach($images[1] as $index => $value) {
-			preg_match('/alt="(.*?)"/', $value, $img);
-			preg_match('/alt=\"(.*?)\"/', $value, $img2);
-			
-			preg_match('/data-src="(.*?)"/', $value, $imgurl);
-			
-			$image_url = $imgurl[1] ?? null;
-          
-          	//get alt from url in WordPress
-    		//global $wpdb;   		
-    		$query_arr  = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE guid='%s';", strtolower( $image_url ) ) );
-    		$image_id   = ( ! empty( $query_arr ) ) ? $query_arr[0] : 0;
-
-    		$title = wp_get_attachment_image_url($image_id, '');//get_post_meta( $image_id, '_wp_attachment_image_alt', true );
-			
-			
-			if(!is_null($images)) {
-				if((!isset($img[1]) || $img[1] == '') || (!isset($img2[1]) || $img2[1] == '')) {
-					
-					$new_img = str_replace('<img', '<img alt="'.$image_id.':'.$title.'"', $images[0][$index]);
-					$buffer = str_replace($images[0][$index], $new_img, $buffer);
-				}
-			}
-		}
-	}
-
-return $buffer;
-}
-
-function buffer_start() { ob_start(); }
-
-function buffer_end() { echo callback(ob_get_clean()); }
-
-add_action('wp', 'buffer_start', 0);
-add_action('wp_footer', 'buffer_end');
-
-*/
-
-//   update_post_meta()
-
-
-//TO ADD MENU PAGE ON THE DASHBOARD: add_menu_page() and add_submenu_page()
-//Follow this: https://github.com/mpeshev/DX-Plugin-Base
-
-//https://www.loyae.com/assets/logos/logo.svg
-
-//plugin_dir_url( __FILE__ ) . 'images/poll_red.png'
 ?>
