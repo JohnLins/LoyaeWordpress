@@ -826,9 +826,12 @@ function loyae_add_meta_tag() {
 
         if(is_single() or is_page()){
             $loyae_alt = NULL;
-         
-            $q = 'SELECT * FROM ' . $loyae_generated_data . ' WHERE ID = '. get_the_ID();
-            $meta = ($wpdb->get_results($q))[0] ?? NULL;
+            $meta = NULL;
+            $q =  $loyae_generated_data . ' WHERE ID = '. get_the_ID();
+            if($wpdb->get_var("SHOW TABLES LIKE '$loyae_generated_data'") == $loyae_generated_data && $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM ' . $q))){
+                $meta = ($wpdb->get_results('SELECT * FROM ' . $q))[0];
+            }
+                
     
 
             if($meta != NULL){
