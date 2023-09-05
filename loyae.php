@@ -13,21 +13,53 @@ $GLOBALS['base64logo'] = "data:image/svg+xml;base64,CjwhRE9DVFlQRSBzdmcgUFVCTElD
 
 global $wpdb;
 $wpdb->show_errors();
- 
 
-$args = array(
-    'numberposts'	=> 20,
-    'category'		=> 0
-);
-
-$GLOBALS['posts'] = get_posts( $args );
-$GLOBALS['pages'] = get_pages();
 
 
 add_action('admin_menu', 'my_menu');
 function my_menu() {
-    add_menu_page('Loyae Admin', 'Loyae', 'manage_options', 'my-page-slug', 'loyae_admin_page', $GLOBALS['base64logo'], null);
+    add_menu_page('Loyae Admin', 'Loyae', 'manage_options', 'my-page-slug', 'loyae_home', $GLOBALS['base64logo'], null);
 }
+
+//add_action( 'admin_post_loyae_form', 'loyae_admin_page' );
+function loyae_home(){
+    echo '<form method="post" action="">';
+    echo '</br>';
+    echo get_submit_button( 'Diagnose all '. wp_count_posts('post')->publish . ' posts', 'primary', 'all', false );
+    
+    if(wp_count_posts('post')->publish > 20){
+        echo '</br><br/>';
+        echo get_submit_button( 'Diagnose the last 10 posts (takes less time to load)', 'primary', 'twenty', false );
+    }
+
+    echo '</form>';
+
+    if (isset($_POST['twenty'])) {
+        $args = array(
+            'numberposts'	=> 10,
+            'category'		=> 0
+        );
+
+        $GLOBALS['posts'] = get_posts( $args );
+        $GLOBALS['pages'] = get_pages();
+
+        loyae_admin_page();
+    }
+
+    if (isset($_POST['all'])) {
+        $args = array(
+            'numberposts'	=> -1,
+            'category'		=> 0
+        );
+
+        $GLOBALS['posts'] = get_posts( $args );
+        $GLOBALS['pages'] = get_pages();
+
+        loyae_admin_page();
+    }
+}
+
+
 
 
 class Diagnostic {
@@ -591,7 +623,7 @@ function get_generated_meta($id, $email, $cardnum){
     $post_text = wp_strip_all_tags(apply_filters('the_content', get_post_field('post_content', $id)));
     
     $srcs = array();
-    $imgs = array(''=>'');
+    $imgs = array('null'=>'null');
     $dom = new DOMDocument();
     libxml_use_internal_errors(true); 
     $dom->loadHTML($post_class->post_content);
@@ -599,10 +631,11 @@ function get_generated_meta($id, $email, $cardnum){
     $images = $dom->getElementsByTagName('img');
 
 
-    
-    for ($i = 0; $i < count($images); $i++) {
-        $srcs[$i] = $images[$i]->getAttribute('src');
-        $imgs[$srcs[$i]] = $images[$i]->getAttribute('alt');
+    if(count($images) != 0){
+        for ($i = 0; $i < count($images); $i++) {
+            $srcs[$i] = $images[$i]->getAttribute('src');
+            $imgs[$srcs[$i]] = $images[$i]->getAttribute('alt');
+        }
     }
 
 
@@ -742,9 +775,9 @@ function loyae_form_handler() {
 
             $charset_collate = $wpdb->get_charset_collate();
             
-            echo "<div style='text-align:center; font-family: arial'><span style='color:green;font-size: 25px;'>Thank You!</span><br/><br/><span style='color:red;font-size: 25px;'><b>DO NOT CLOSE THIS PAGE UNTIL IT SAYS, FINISHED LOADING (this may take a very long time for large websites)</b></span><br/><br/>
+            echo "<div style='text-align:center; font-family: arial'><span style='color:green;font-size: 25px;'>Thank You!</span><br/><br/>
             <span style='color:black;font-size: 20px;'>PLEASE CONTACT US AT contact@loyae.com IF ISSUES ARISE</span><br/><br/>
-            <span style='color:black;font-size: 20px;'>Sometimes Loyae will deliberately avoid placing some metadata on pages with not enough content. When this happens, please contact us for a partial refund</span><br/><br/>
+            <span style='color:black;font-size: 20px;'>Note: sometimes Loyae will deliberately avoid placing some metadata on pages with not enough content.</span><br/><br/>
             <br/><span style='font-size: 30px'>LOGS:</span><br/><br/></div>";
             $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
             $entry = "";
@@ -803,7 +836,7 @@ function loyae_form_handler() {
                  
     
 
-
+                echo '</br>';
                 exit("FINISHED LOADING");
 
             
