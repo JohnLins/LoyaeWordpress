@@ -7,10 +7,6 @@
  * Author:            Loyae
  */
 
-$GLOBALS['base64logo'] = "data:image/svg+xml;base64,CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMjAwMTA5MDQvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvVFIvMjAwMS9SRUMtU1ZHLTIwMDEwOTA0L0RURC9zdmcxMC5kdGQiPgo8c3ZnIHZlcnNpb249IjEuMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTAwMDAgMTAwMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIG1lZXQiPgo8ZyBpZD0ibGF5ZXIxMDEiIGZpbGw9IiNmMDgwODAiIHN0cm9rZT0ibm9uZSI+CiA8cGF0aCBkPSJNNDcyMCA5NDkxIGMtOCAtNSAtNjkgLTExIC0xMzUgLTE1IC02NiAtMyAtMTQ3IC0xMSAtMTgwIC0xNiAtMzMgLTYgLTEwMyAtMTcgLTE1NSAtMjUgLTEwNiAtMTcgLTE5NSAtMzUgLTI4NSAtNjAgLTMzIC0xMCAtOTEgLTI0IC0xMzAgLTMyIC0zOCAtOCAtNzkgLTE4IC05MCAtMjMgLTExIC00IC0zOCAtMTMgLTYwIC0xOCAtMjIgLTYgLTY1IC0yMCAtOTUgLTMyIC0zMCAtMTIgLTcxIC0yNiAtOTAgLTMyIC0xOSAtNSAtMzkgLTE0IC00NSAtMTkgLTUgLTUgLTE1IC05IC0yMyAtOSAtOCAwIC0yOCAtNiAtNDUgLTE0IC0xOCAtNyAtNTkgLTIzIC05MiAtMzYgLTYzIC0yNCAtMTM5IC01NiAtMTY1IC03MSAtMzUgLTE5IC0xNzggLTg5IC0xODMgLTg5IC0xMCAwIC0xNzUgLTk0IC0yNDAgLTEzNiAtMzcgLTI1IC03OSAtNTAgLTk1IC01NyAtMTUgLTYgLTI5IC0xNCAtMzIgLTE3IC0xMyAtMTQgLTcwIC01MCAtNzkgLTUwIC01IDAgLTExIC0zIC0xMyAtNyAtNSAtMTMgLTc2IC02MyAtODcgLTYzIC02IDAgLTExIC00IC0xMSAtOSAwIC01IC0xNSAtMTkgLTMzIC0zMCAtMTggLTExIC00MiAtMjggLTU0IC0zOCAtMTIgLTEwIC0zMSAtMjUgLTQzIC0zMyAtNDkgLTMzIC0xMjcgLTk3IC0xNjggLTEzNyAtMjMgLTI0IC00NSAtNDMgLTQ4IC00MyAtMTYgMCAtNDE0IC0zOTkgLTQxNCAtNDE0IDAgLTUgLTIxIC0zMCAtNDggLTU3IC01NyAtNTkgLTkyIC0xMDMgLTkyIC0xMTggMCAtNiAtMyAtMTEgLTcgLTExIC01IDAgLTIxIC0yMCAtMzggLTQ1IC0xNiAtMjQgLTMzIC00NSAtMzcgLTQ1IC01IDAgLTggLTcgLTggLTE1IDAgLTggLTkgLTE5IC0yMCAtMjUgLTExIC02IC0yMCAtMTcgLTIwIC0yNSAwIC04IC02IC0xOCAtMTIgLTIyIC0xNyAtMTEgLTU4IC02OSAtNTggLTgzIDAgLTUgLTQgLTEwIC04IC0xMCAtNSAwIC0xOSAtMjAgLTMxIC00NSAtMTIgLTI1IC0yNiAtNDUgLTMwIC00NSAtNCAwIC0xMyAtMTYgLTIwIC0zNSAtNyAtMTkgLTE3IC0zNSAtMjIgLTM1IC01IDAgLTkgLTYgLTkgLTE0IDAgLTggLTYgLTIxIC0xMyAtMjggLTcgLTcgLTIwIC0yNiAtMjggLTQzIC0yMyAtNDYgLTQzIC03OCAtNTYgLTkzIC03IC03IC0xMyAtMjAgLTEzIC0yOCAwIC04IC00IC0xNCAtMTAgLTE0IC01IDAgLTEwIC03IC0xMCAtMTUgMCAtOCAtMTAgLTM0IC0yMSAtNTcgLTEyIC0yNCAtMzEgLTYzIC00MyAtODggLTExIC0yNCAtMjcgLTUxIC0zMyAtNTggLTcgLTcgLTEzIC0yMiAtMTMgLTMzIDAgLTEwIC00IC0xOSAtMTAgLTE5IC01IDAgLTEyIC0xMiAtMTYgLTI3IC0zIC0xNiAtMTQgLTQ2IC0yNCAtNjggLTQwIC04OSAtNTAgLTExMyAtNTAgLTEyMyAwIC01IC03IC0yMyAtMTUgLTM4IC04IC0xNiAtMTUgLTM2IC0xNSAtNDQgMCAtOCAtOSAtMzMgLTIwIC01NSAtMTEgLTIyIC0xOSAtNTAgLTIwIC02MiAwIC0xMiAtNCAtMjMgLTkgLTI1IC02IC0xIC0xMyAtMTkgLTE2IC0zOCAtMyAtMTkgLTEwIC0zNyAtMTQgLTQwIC00IC0zIC0xNSAtNDEgLTI0IC04NSAtMjYgLTEyOSAtNDEgLTE5MCAtNDggLTE5NSAtNCAtMyAtMTAgLTI2IC0xNCAtNTMgLTQgLTI2IC0xMSAtNDkgLTE1IC01MiAtNSAtMyAtMTEgLTM2IC0xNSAtNzMgLTMgLTM3IC05IC03NCAtMTIgLTgyIC00IC04IC04IC0yNCAtOSAtMzUgLTExIC03MiAtMzYgLTI4NSAtNDQgLTM2MCAtMTEgLTEyMCAtMTEgLTYzNCAwIC03NjAgOSAtMTAyIDM2IC0zMTkgNDUgLTM2NSAzIC0xNCAxMCAtNTYgMTUgLTk1IDYgLTM4IDE0IC03NyAxNyAtODUgNCAtOCAxMiAtMzcgMTkgLTY1IDEzIC01MiAzMyAtMTI5IDQwIC0xNTUgMiAtOCAxMiAtNDkgMjIgLTkwIDkgLTQxIDIwIC04MCAyNCAtODUgMyAtNiA5IC0yNyAxMyAtNDggNCAtMjAgMTEgLTM3IDE1IC0zNyA3IDAgMjEgLTQyIDIyIC02NyAwIC01IDcgLTE3IDE0IC0yOCA4IC0xMSAxNCAtMjggMTQgLTM4IDAgLTEwIDcgLTMyIDE2IC00OCA4IC0xNyAxNyAtNDAgMjAgLTUyIDIgLTEyIDEwIC0zNiAxOSAtNTQgMTUgLTM0IDMyIC03MiA2NyAtMTUzIDExIC0yNSAyMyAtNTIgMjggLTYwIDUgLTggMTkgLTM1IDMxIC02MCAxMiAtMjUgMjUgLTUyIDMwIC02MCA1IC04IDE0IC0yNiAyMCAtNDAgNiAtMTQgMTUgLTMyIDIwIC00MCA1IC04IDE0IC0yNiAyMCAtNDAgNiAtMTQgMTggLTMzIDI2IC00MiA5IC0xMCAxMiAtMTggNyAtMTggLTUgMCAtMiAtNiA2IC0xMyA4IC03IDIxIC0yMyAyOCAtMzcgNyAtMTQgMjEgLTM4IDMyIC01NSAxMSAtMTYgMjYgLTQ0IDM0IC02MCAxOCAtMzggMTA3IC0xNjkgMTE4IC0xNzMgNCAtMiA4IC0xMCA4IC0xOCAwIC04IDcgLTE3IDE1IC0yMCA4IC00IDE1IC0xMSAxNSAtMTYgMCAtNiAxOCAtMzIgNDAgLTU4IDIyIC0yNiA0MCAtNTIgNDAgLTU3IDAgLTUgMTMgLTIzIDMwIC00MSAxNiAtMTggMzAgLTM4IDMwIC00MyAwIC01IDcgLTEyIDE1IC0xNSA4IC00IDE1IC0xMSAxNSAtMTcgMCAtNiAxNSAtMjUgMzMgLTQyIDE4IC0xNiA0NCAtNDYgNTkgLTY1IDE0IC0xOSA1MiAtNjMgODQgLTk2IDMzIC0zNCA4MyAtODkgMTEzIC0xMjMgMzAgLTM0IDU4IC02MSA2MiAtNjEgNCAwIDQ5IC0zOSA5OSAtODggNTEgLTQ4IDEwMyAtOTQgMTE1IC0xMDIgMTMgLTkgMzUgLTI4IDQ5IC00MyAxNCAtMTUgMzAgLTI3IDM2IC0yNyA1IDAgMTAgLTQgMTAgLTEwIDAgLTUgMTUgLTE3IDMzIC0yNiAxNyAtOSAzNCAtMjAgMzcgLTI0IDkgLTEzIDEzNiAtMTA2IDE1MyAtMTEzIDkgLTMgMTcgLTExIDE3IC0xNyAwIC01IDcgLTEwIDE1IC0xMCA4IDAgMTUgLTUgMTUgLTEwIDAgLTYgMTIgLTE2IDI4IC0yMyAxNSAtNiAyOSAtMTQgMzIgLTE3IDUgLTUgOTEgLTYxIDEzNSAtODggMTEgLTcgMzEgLTE4IDQ1IC0yNCAxNCAtNyAyOSAtMTggMzMgLTI1IDQgLTcgMTQgLTEzIDIyIC0xMyA3IDAgMjAgLTYgMjcgLTEzIDE3IC0xNSA0OSAtMzQgMTEzIC02NSAyOCAtMTMgNTcgLTI4IDY1IC0zMyA4IC01IDIyIC0xMiAzMCAtMTUgMjAgLTcgMTYxIC03NSAxODAgLTg1IDggLTUgMjYgLTE0IDQwIC0xOSAxNCAtNiAzNyAtMTcgNTIgLTI1IDE0IC04IDM0IC0xNSA0NSAtMTUgMTAgMCAyNyAtNyAzNyAtMTUgMTEgLTggMjcgLTE1IDM1IC0xNSA5IC0xIDM0IC05IDU2IC0yMCAyMiAtMTEgNDggLTE5IDU3IC0yMCA5IDAgMTkgLTQgMjIgLTkgNCAtNSAyNSAtMTIgNDkgLTE2IDIzIC00IDQ0IC0xMSA0NyAtMTYgMyAtNCAyOCAtMTMgNTUgLTIwIDI4IC02IDU3IC0xNSA2NiAtMTkgOSAtNSAzNCAtMTIgNTUgLTE1IDIyIC00IDQ4IC0xMCA1OSAtMTUgMjYgLTExIDE0NSAtNDAgMjIwIC01NCAzMyAtNiA2NSAtMTQgNzAgLTE3IDYgLTQgNDIgLTEwIDgwIC0xNCAzOSAtNCA3NyAtMTEgODYgLTE1IDggLTUgNjIgLTEyIDEyMCAtMTYgNTcgLTQgMTEwIC0xMSAxMTcgLTE3IDE4IC0xNSA2ODkgLTIxIDgyNyAtOCAyMzggMjMgMzIxIDMyIDMzNSAzOCA4IDQgNDkgMTIgOTAgMTkgMTAyIDE3IDIzMiA0NCAyNTAgNTEgOCA0IDM4IDEyIDY1IDE5IDI4IDcgNzAgMTcgOTUgMjMgMjUgNyA1MiAxNCA2MCAxOCA4IDQgMzggMTIgNjUgMTkgNTcgMTQgMTMyIDM5IDE1NyA1NCAxMCA2IDIzIDEwIDMwIDEwIDcgMCAyNCA2IDM4IDEzIDE0IDcgNDYgMTkgNzMgMjYgMjYgOCA1MCAxOCA1MyAyMiAzIDUgMTIgOSAyMCA5IDkgMCA2MSAyMiAxMTcgNDkgNTYgMjcgMTEyIDUyIDEyNSA1NiAxMiAzIDIyIDExIDIyIDE2IDAgNSA2IDkgMTQgOSAxNiAwIDExOCA0OSAxMjYgNjEgMyA0IDE4IDExIDMzIDE0IDE1IDQgMjcgMTEgMjcgMTYgMCA1IDYgOSAxMyA5IDggMCAyNCA5IDM3IDIwIDEzIDExIDI5IDIwIDM3IDIwIDcgMCAxMyA0IDEzIDkgMCA1IDE2IDE1IDM1IDIxIDE5IDYgMzUgMTYgMzUgMjEgMCA1IDcgOSAxNSA5IDcgMCAxOCA2IDIyIDEyIDggMTMgNDAgMzQgOTMgNjAgMTQgNyAyNyAxNSAzMCAxOCAzIDMgMTYgMTEgMzAgMTggMTQgNyA0NSAzMSA3MCA1MiAyNSAyMiA0OCA0MCA1MiA0MCA0IDAgMTMgNiAyMCAxMyA3IDYgMzIgMjUgNTYgNDEgMjMgMTYgNDIgMzMgNDIgMzcgMCA1IDcgOSAxNSA5IDcgMCAxOCA2IDIyIDEzIDQgNyAxOSAyMCAzMyAyOCAxNCA5IDQ2IDM2IDcxIDYwIDI2IDI0IDc3IDcyIDExMyAxMDYgMzYgMzUgNzEgNjMgNzcgNjMgNSAwIDcgNSA0IDEwIC0zIDYgMCAxMCA3IDEwIDE0IDAgMTI4IDEwOSAxMjggMTIzIDAgNSAyNyAzNCA2MCA2NSAzMyAzMiA2MCA2MSA2MCA2NSAwIDUgMjggMzcgNjIgNzMgMzQgMzUgNjYgNzIgNzIgODEgNSAxMCAxNSAyMiAyMyAyNiA3IDQgMTMgMTMgMTMgMTkgMCA3IDE3IDMyIDM4IDU3IDIxIDI1IDU0IDY4IDczIDk2IDQxIDU5IDQ5IDcxIDY5IDk0IDE0IDE3IDI0IDMzIDUzIDg0IDYgMTIgMTggMjYgMjUgMzAgNiA0IDEyIDE3IDEyIDI3IDAgMTAgNiAyMyAxMyAyNyA3IDQgMjEgMjYgMzIgNDggMTEgMjIgMzQgNjAgNTAgODUgMzQgNTAgMTQ1IDI3MiAxNDUgMjg5IDAgNiA1IDExIDEwIDExIDYgMCAxMCA0IDEwIDEwIDAgNSAyMyA1NyA1MCAxMTQgMjggNTcgNTAgMTA5IDUwIDExNiAwIDYgOSAyOSAyMCA1MCAxMSAyMiAxOCA0MCAxNiA0MCAtNiAwIDQwIDEyOCA1MSAxNDIgNiA3IDE0IDMxIDE4IDUzIDQgMjIgMTEgNDIgMTUgNDUgNSAzIDExIDE5IDE0IDM1IDE0IDczIDE3IDg2IDI2IDExMCA1IDE0IDEyIDQwIDE1IDU4IDQgMTggMTMgNTEgMjEgNzUgNyAyMyAxNCA1MSAxNCA2MSAwIDEwIDMgMjEgNyAyNSA3IDcgOCA4IDE4IDcxIDQgMjIgMTEgNjAgMTcgODUgNSAyNSAxNCA3OSAxOSAxMjAgNSA0MSAxMiA4NiAxNSAxMDAgMjQgMTAwIDM3IDMxMSAzNyA2MDUgMCAyNjIgLTE1IDU0MSAtMzAgNTc1IC05IDIyIC05IDE3IC0xNyAxMTAgLTUgNDcgLTEyIDkwIC0xNiA5NSAtNCA2IC0xMiA1MCAtMTggOTkgLTcgNDkgLTE2IDk0IC0yMSAxMDAgLTQgNiAtMTIgMzIgLTE1IDU4IC00IDI2IC0xMSA1MCAtMTYgNTMgLTQgMyAtMTEgMjkgLTE1IDU4IC00IDI4IC0xMSA1NyAtMTUgNjIgLTQgNiAtMTIgMzkgLTE5IDc0IC02IDM2IC0xNSA2OSAtMjEgNzUgLTUgNSAtMTAgMTcgLTEwIDI1IC0xIDkgLTkgMzQgLTIwIDU2IC0xMSAyMiAtMTkgNDggLTIwIDU3IDAgOSAtNCAxOSAtOSAyMiAtNSAzIC0xNCAyOCAtMjEgNTYgLTcgMjggLTE2IDUzIC0yMSA1NiAtNSAzIC05IDEzIC05IDIyIC0xIDkgLTkgMzUgLTIwIDU3IC0xMSAyMiAtMTkgNDMgLTIwIDQ3IDAgNCAtMTYgNDEgLTM1IDgyIC0xOSA0MSAtMzUgNzkgLTM1IDg1IDAgNSAtMyAxMSAtNyAxMyAtMTEgNCAtNzkgMTM4IC04NyAxNzEgLTMgMTUgLTExIDI3IC0xNiAyNyAtNiAwIC0xMCA2IC0xMCAxMyAwIDYgLTE4IDQwIC00MCA3NSAtMjIgMzQgLTQwIDY3IC00MCA3MiAwIDQgLTQgMTAgLTggMTIgLTUgMiAtMzIgNDQgLTYyIDkzIC02MCAxMDAgLTk4IDE1NCAtMjM3IDM0MCAtNSA2IC0yNSAzMSAtNDUgNTcgLTIxIDI1IC0zOCA1MCAtMzggNTQgMCA0IC0xNSAyMSAtMzIgMzkgLTE4IDE4IC04NCA4OSAtMTQ3IDE1OCAtNjMgNjkgLTE3MCAxNzcgLTIzOSAyMzkgLTY4IDYyIC0xNDEgMTI5IC0xNjIgMTQ4IC0yMCAxOSAtNDcgNDIgLTU5IDUwIC0yMSAxMyAtNTcgNDAgLTg2IDYzIC0xMTggOTIgLTI0NyAxODQgLTMxMCAyMjEgLTEyMCA3MSAtMTIwIDcxIC0xMjUgNzYgLTIzIDI1IC0yMTkgMTI4IC00NDUgMjM0IC02NiAzMSAtMTI3IDYxIC0xMzUgNjUgLTkgNSAtMzEgMTIgLTUwIDE2IC0xOSA0IC0zNyAxMCAtNDAgMTQgLTMgMyAtNDMgMTkgLTkwIDM1IC00NyAxNSAtOTkgMzQgLTExNyA0MiAtMTcgOCAtMzggMTQgLTQ2IDE0IC05IDAgLTE4IDQgLTIxIDkgLTQgNSAtMjUgMTIgLTQ4IDE2IC0yMyA0IC00OSAxMSAtNTggMTYgLTggNSAtNDYgMTUgLTg1IDIzIC0xNDEgMzAgLTE3MCAzNyAtMTg2IDQ2IC05IDQgLTM4IDExIC02NSAxNSAtMjcgNCAtNTYgOSAtNjQgMTMgLTI5IDExIC0yNTYgNDIgLTM5MCA1MiAtNzQgNiAtMTU1IDE1IC0xODAgMjEgLTUzIDExIC01MzggMTEgLTU2MCAweiBtLTg1IC0xMTQwIGM5OCAtMTAgMjYzIC0zOCAyOTAgLTUxIDExIC01IDM2IC0xMiA1NSAtMTUgMzggLTcgMTA3IC0yOSAxNTcgLTUxIDE3IC04IDQwIC0xNCA1MCAtMTQgMTEgMCAyOCAtNyAzOSAtMTUgMTAgLTggMjYgLTE1IDM1IC0xNSA5IDAgMjIgLTYgMjggLTE0IDcgLTggMjcgLTE3IDQ2IC0yMCAxOSAtNCAzNSAtMTEgMzUgLTE2IDAgLTUgMTIgLTEzIDI3IC0xNiAxNSAtNCA1OSAtMjkgOTcgLTU2IDM5IC0yNiA3NCAtNDggNzkgLTQ4IDUgMCA0NyAtMjkgOTMgLTY1IDQ2IC0zNiA4NiAtNjUgODkgLTY1IDMgMCAzMiAtMjYgNjYgLTU3IDMzIC0zMiA3MSAtNjMgODIgLTcwIDEyIC02IDI5IC0yMiAzNyAtMzQgMTcgLTI1IDgxIC05OSAxMjMgLTE0MSAxNSAtMTUgMjcgLTMyIDI3IC0zNyAwIC02IDcgLTE0IDE2IC0xOSA4IC01IDIxIC0xOCAyNyAtMjkgMjcgLTQ3IDkzIC0xNDcgMTEwIC0xNjQgOSAtMTEgMTcgLTIzIDE3IC0yOSAwIC01IDUgLTEwIDEwIC0xMCA2IDAgMTAgLTUgMTAgLTExIDAgLTYgOSAtMjMgMTkgLTM4IDExIC0xNSAyMyAtMzkgMjYgLTU0IDQgLTE1IDExIC0yNyAxNSAtMjcgNSAwIDEyIC0xNCAxNSAtMzIgNCAtMTcgMTQgLTM4IDIxIC00NiA4IC03IDE0IC0yMSAxNCAtMzAgMCAtOSA3IC0yNiAxNSAtMzYgOCAtMTEgMTUgLTI5IDE1IC00MSAwIC0xMiAzIC0yNSA4IC0yOSA0IC00IDcgLTExIDggLTE0IDAgLTQgMyAtMTQgNiAtMjIgMjEgLTU3IDM3IC0xMTAgNDMgLTE0MCAzIC0xOSAxMCAtNDQgMTUgLTU1IDEwIC0yMyAzMCAtMTEyIDM2IC0xNjUgMiAtMTkgOSAtNzggMTUgLTEzMCAxMyAtMTA5IDUgLTUwMCAtMTIgLTU3MCAtNSAtMjUgLTE1IC03MiAtMjEgLTEwNSAtNSAtMzMgLTE0IC02NCAtMTggLTcwIC00IC01IC0xMSAtMzIgLTE1IC01OSAtNCAtMjcgLTE0IC02MSAtMjEgLTc1IC04IC0xNCAtMTQgLTM0IC0xNCAtNDMgMCAtOSAtNCAtMTkgLTkgLTIzIC01IC0zIC0xNSAtMzAgLTIyIC02MCAtNyAtMzAgLTE2IC01NSAtMjAgLTU1IC00IDAgLTEwIC0xMyAtMTQgLTMwIC00IC0xNiAtMTEgLTMwIC0xNiAtMzAgLTUgMCAtMTIgLTEyIC0xNSAtMjcgLTQgLTE1IC0xMyAtMzggLTIwIC01MiAtOCAtMTQgLTE0IC0zMiAtMTQgLTM5IDAgLTcgLTcgLTE1IC0xNSAtMTggLTggLTQgLTEzIC05IC0xMSAtMTMgMyAtNCAtNiAtMjAgLTIwIC0zNiAtMTMgLTE1IC0yNCAtMzQgLTI0IC00MiAwIC03IC00IC0xMyAtMTAgLTEzIC01IDAgLTEwIC02IC0xMCAtMTMgMCAtOCAtOSAtMjUgLTIwIC0zOCAtMzEgLTM4IC0zNCAtNDIgLTQ5IC03MSAtOCAtMTYgLTE4IC0yOCAtMjMgLTI4IC01IDAgLTEzIC0xMSAtMTggLTI1IC01IC0xNCAtMTQgLTI1IC0yMCAtMjUgLTUgMCAtMTAgLTUgLTEwIC0xMSAwIC0xNyAtMTgwIC0yMDQgLTI3OSAtMjg5IC0zNSAtMzAgLTY5IC02MCAtNzUgLTY2IC03IC02IC0yNiAtMTkgLTQ0IC0yOCAtMTggLTkgLTMyIC0yMSAtMzIgLTI2IDAgLTYgLTcgLTEwIC0xNSAtMTAgLTcgMCAtMTggLTYgLTIyIC0xMyAtOCAtMTQgLTEyNSAtODcgLTEzOSAtODcgLTQgMCAtMTUgLTYgLTIzIC0xNCAtMjEgLTE5IC0xNTMgLTg2IC0xNjggLTg2IC03IDAgLTEzIC00IC0xMyAtOSAwIC01IC0xNSAtMTMgLTMyIC0xNiAtMTggLTQgLTM3IC0xMSAtNDMgLTE1IC01IC00IC0yNiAtMTMgLTQ1IC0xOCAtMTkgLTYgLTYyIC0yMSAtOTUgLTMzIC02MCAtMjEgLTE0MCAtNDEgLTI0NSAtNjAgLTMwIC02IC03MSAtMTUgLTkwIC0yMSAtNTIgLTE1IC00OTEgLTIyIC01NzUgLTkgLTM4IDcgLTEwMSAxNiAtMTQwIDIxIC0zOCA2IC03OSAxNCAtOTAgMjAgLTExIDUgLTQwIDEzIC02NSAxOSAtODEgMTcgLTE2NSA0MiAtMTc0IDUyIC02IDUgLTE2IDkgLTI0IDkgLTcgMCAtMzQgOSAtNjAgMjEgLTI2IDExIC02MyAyNyAtODIgMzYgLTczIDMxIC0xNzUgODUgLTIxNyAxMTQgLTI0IDE2IC00NyAyOSAtNTEgMjkgLTUgMCAtMTcgNyAtMjcgMTUgLTExIDggLTU0IDQwIC05NSA3MCAtMTE5IDg3IC0yMzcgMTk1IC0zNDYgMzE1IC01MSA1NyAtMTg3IDIzNyAtMjA1IDI3MiAtOCAxNSAtMzMgNTggLTU2IDk2IC0yMyAzNyAtNDUgODAgLTQ4IDk1IC00IDE1IC0xMSAyNyAtMTYgMjcgLTUgMCAtOSA1IC05IDExIDAgNiAtNiAyNSAtMTQgNDIgLTQ0IDk2IC01NiAxMjcgLTU2IDE0MSAwIDggLTQgMTcgLTkgMjEgLTUgMyAtMTUgMzEgLTIyIDYzIC03IDMxIC0xNSA2MiAtMTkgNjcgLTQgNiAtMTAgMzAgLTE0IDU1IC00IDI0IC0xMSA0OSAtMTYgNTUgLTUgNiAtMTMgNDUgLTE2IDg2IC00IDQxIC0xMiA4MCAtMTggODggLTE0IDE4IC0xOSA1MTAgLTUgNTY2IDExIDQ1IDEzIDU3IDIzIDEzNSA0IDMwIDE0IDc0IDIyIDk3IDcgMjQgMTUgNTcgMTYgNzQgMSAxNyA2IDMzIDEwIDM1IDQgMyA4IDE1IDggMjYgMCAxMiA4IDQwIDE4IDYyIDIxIDQ2IDM5IDk1IDUzIDE0NCA2IDE3IDE0IDMyIDE5IDMyIDYgMCAxMCA3IDEwIDE3IDAgMjIgNzIgMTY2IDg3IDE3NiA3IDQgMTMgMTIgMTMgMTcgMCAxNSA3MiAxMzQgODcgMTQzIDcgNCAxMyAxNSAxMyAyMiAwIDggNCAxNSA5IDE1IDUgMCAxOCAxNSAzMCAzMyAxMSAxNyAyNiA0MCAzMyA1MSAxOCAyNiAxMDEgMTE1IDE3OCAxOTAgMzYgMzUgODUgODQgMTEwIDEwOSAyNSAyNCA1MyA0NyA2MyA1MCA5IDQgMTcgMTEgMTcgMTcgMCA1IDUgMTAgMTEgMTAgNiAwIDI1IDExIDQzIDI1IDQ3IDM4IDQ4IDM5IDkxIDY1IDIyIDEzIDQyIDI3IDQ1IDMxIDMgNCAxNyAxMyAzMCAxOCAyOSAxMyA1OSAzMSA3OCA0OSA3IDYgMjIgMTIgMzEgMTIgMTAgMCAyNCA3IDMxIDE1IDcgOCAyMSAxNSAzMSAxNSA5IDAgMjQgNiAzMSAxMyAxNCAxNCAxNjEgNzMgMjIzIDg5IDIyIDYgNDUgMTQgNTAgMTggNiA0IDMwIDExIDU1IDE1IDI1IDQgNTAgMTEgNTUgMTUgMTEgOSAxODggNDAgMjg1IDUwIDkxIDEwIDM2OSAxMCA0NjUgMXoiLz4KIDwvZz4KCjwvc3ZnPg==";
-
-
-
 global $wpdb;
 $wpdb->show_errors();
 
@@ -18,7 +14,7 @@ $wpdb->show_errors();
 
 add_action('admin_menu', 'loyae_menu');
 function loyae_menu() {
-    add_menu_page('Loyae Admin', 'Loyae', 'manage_options', 'my-page-slug', 'loyae_home', $GLOBALS['base64logo'], null);
+    add_menu_page('Loyae Admin', 'Loyae', 'manage_options', 'my-page-slug', 'loyae_home', plugins_url('icon.ico', __FILE__), null);
 }
 
 
@@ -27,7 +23,7 @@ function loyae_menu() {
 //add_action( 'admin_post_loyae_form', 'loyae_admin_page' );
 function loyae_home(){
     echo '<br/><div><center>
-    <img src="'.esc_attr($GLOBALS['base64logo']).'" height="20px;"/> 
+    <img src="'.esc_attr(plugins_url('icon.svg', __FILE__)).'" height="20px;"/> 
     <h1 style="display:inline-block;">Loyae </h1> <h6 style="display:inline-block;">V1.0.1</h6><br/>
     <br/><hr/><br/>
     <h2 id="loader" style="display:none">Loading... Please be patient as we diagnose these selected posts/pages (this may take time)</h2>
@@ -50,30 +46,19 @@ function loyae_home(){
 
 
     if (isset($_POST['some'])) {
-        $args = array(
+        loyae_admin_page(array(
             'numberposts'	=> 10,
             'category'		=> 0
-        );
-
-        $GLOBALS['posts'] = get_posts( $args );
-        $GLOBALS['pages'] = get_pages();
-
-        loyae_admin_page();
+        ));
     }
 
     if (isset($_POST['all'])) {
-        $args = array(
+        loyae_admin_page(array(
             'numberposts'	=> -1,
             'category'		=> 0
-        );
-
-        $GLOBALS['posts'] = get_posts( $args );
-        $GLOBALS['pages'] = get_pages();
-
-        loyae_admin_page();
+        ));
     }
 
-    
 
 }
 
@@ -110,23 +95,17 @@ class Diagnostic {
 
 
 
-$prices = null;
-$pricesresp = wp_remote_get("https://api.loyae.com/prices");
-if(!is_wp_error($pricesresp)){
-    $prices= json_decode(wp_remote_retrieve_body($pricesresp));
-}
-
-$GLOBALS['ALTRATE'] = $prices->ALTRATE;
-$GLOBALS['DESCRIPTIONRATE'] =  $prices->DESCRIPTIONRATE;
-$GLOBALS['SIMPLEMETARATE'] = $prices->SIMPLEMETARATE;
-
-
 function loyae_local_diagnostic($id){
     $output = new Diagnostic();
 
+    $prices = null;
+    $pricesresp = wp_remote_get("https://api.loyae.com/prices");
+    if(!is_wp_error($pricesresp)){
+        $prices= json_decode(wp_remote_retrieve_body($pricesresp));
+    }
     
 
-    $cost_to_optimize =3*$GLOBALS['DESCRIPTIONRATE'] + 2*$GLOBALS['ALTRATE'] + 17*$GLOBALS['SIMPLEMETARATE'];
+    $cost_to_optimize =3*$prices->DESCRIPTIONRATE + 2*$prices->ALTRATE + 17*$prices->SIMPLEMETARATE;
     $response = wp_remote_get( get_permalink($id) );
     $body = wp_remote_retrieve_body( $response );
     $dom = new DOMDocument();
@@ -149,7 +128,7 @@ function loyae_local_diagnostic($id){
       }
     }
 
-    $cost_to_optimize += $GLOBALS['ALTRATE'] * ($output->number_of_imgs - $output->num_of_imgs_with_alt);
+    $cost_to_optimize += $prices->ALTRATE * ($output->number_of_imgs - $output->num_of_imgs_with_alt);
 
     $metas = $dom->getElementsByTagName("meta");
     
@@ -189,28 +168,28 @@ function loyae_local_diagnostic($id){
         }
         
 
-        if($temp == "description"){$output->is_meta_description = true;$cost_to_optimize-=$GLOBALS['DESCRIPTIONRATE'];}
-        if($temp == "og:description"){$output->is_meta_og_description = true;$cost_to_optimize-=$GLOBALS['DESCRIPTIONRATE'];}
-        if($temp == "og:image"){$output->is_meta_og_image = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "og:image:alt"){$output->is_meta_og_image_alt = true;$cost_to_optimize-=$GLOBALS['ALTRATE'];}
-        if($temp == "og:image:width"){$output->is_meta_og_image_width = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "og:image:height"){$output->is_meta_og_image_height = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "og:image:type"){$output->is_meta_og_image_type = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "og:site_name"){$output->is_meta_og_site_name = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "og:keywords"){$output->is_meta_og_keywords = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "og:title"){$output->is_meta_og_title = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "og:url"){$output->is_meta_og_url = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "og:type"){$output->is_meta_og_type = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "keywords"){$output->is_meta_keywords = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "theme-color"){$output->is_meta_theme_color = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "twitter:card"){$output->is_meta_twitter_card = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "twitter:title"){$output->is_meta_twitter_title = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "twitter:description"){$output->is_meta_twitter_description = true;$cost_to_optimize-=$GLOBALS['DESCRIPTIONRATE'];}
-        if($temp == "twitter:image"){$output->is_meta_twitter_image = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image_alt = true;$cost_to_optimize-=$GLOBALS['ALTRATE'];}
-        if($temp == "twitter:url"){$output->is_meta_twitter_url = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
-        if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;$cost_to_optimize-=$GLOBALS['SIMPLEMETARATE'];}
+        if($temp == "description"){$output->is_meta_description = true;$cost_to_optimize-=$prices->DESCRIPTIONRATE;}
+        if($temp == "og:description"){$output->is_meta_og_description = true;$cost_to_optimize-=$prices->DESCRIPTIONRATE;}
+        if($temp == "og:image"){$output->is_meta_og_image = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "og:image:alt"){$output->is_meta_og_image_alt = true;$cost_to_optimize-=$prices->ALTRATE;}
+        if($temp == "og:image:width"){$output->is_meta_og_image_width = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "og:image:height"){$output->is_meta_og_image_height = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "og:image:type"){$output->is_meta_og_image_type = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "og:site_name"){$output->is_meta_og_site_name = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "og:keywords"){$output->is_meta_og_keywords = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "og:title"){$output->is_meta_og_title = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "og:url"){$output->is_meta_og_url = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "og:type"){$output->is_meta_og_type = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "keywords"){$output->is_meta_keywords = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "theme-color"){$output->is_meta_theme_color = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "twitter:card"){$output->is_meta_twitter_card = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "twitter:title"){$output->is_meta_twitter_title = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "twitter:description"){$output->is_meta_twitter_description = true;$cost_to_optimize-=$prices->DESCRIPTIONRATE;}
+        if($temp == "twitter:image"){$output->is_meta_twitter_image = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image_alt = true;$cost_to_optimize-=$prices->ALTRATE;}
+        if($temp == "twitter:url"){$output->is_meta_twitter_url = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
 
 
     }
@@ -226,9 +205,14 @@ if(abs($output->cost_to_optimize) < .01){
 
 
 add_action( 'admin_post_loyae_form', 'loyae_form_handler' );
-function loyae_admin_page() {
+function loyae_admin_page($args) {
 
    
+    $content = array (
+        'posts' => get_posts($args),
+        'pages' => get_pages()
+    );
+    
 
         echo   '<script>
                 var totalAmount = 0.0;
@@ -240,7 +224,7 @@ function loyae_admin_page() {
                        <input type="hidden" name="action" value="loyae_form">';
 
         foreach(array("posts", "pages") as $cat){
-            if( ! empty( $GLOBALS[$cat] ) ){
+            if(!empty( $content[$cat] ) ){
                 $post_table .= '<center> Everything: <input type="checkbox" cost="0" onclick="toggle(this, `'.$cat.'`)" onchange="sumAmount(this)"/><br/><br/><div class="table-container"><table class="timecard">
                                 <caption>'.esc_html(ucfirst($cat)).'</caption>
                                 <thread>
@@ -257,9 +241,9 @@ function loyae_admin_page() {
 
                               
                 
-                for($i = 0; $i < count($GLOBALS[$cat]); $i++){
+                for($i = 0; $i < count($content[$cat]); $i++){
                     $class = ''; if($i % 2 == 0){ $class = 'even';}else {$class = 'odd';}
-                        $id = ($GLOBALS[$cat])[$i]->ID;
+                        $id = ($content[$cat])[$i]->ID;
                         $temp_local_diagnostic = loyae_local_diagnostic($id);
                                 
                                 $post_table .= '<tr class="'. esc_attr($class) .'">
@@ -267,8 +251,8 @@ function loyae_admin_page() {
 
                                 <td><input type="checkbox" name="'.$id.'_box" class="'.$cat.'" cost="'.$temp_local_diagnostic->cost_to_optimize.'" onchange="sumAmount(this)"/> ($'.$temp_local_diagnostic->cost_to_optimize.')</td>
                                 <td><a href="' . esc_attr(get_permalink($id)) .'">' 
-                                . ($GLOBALS[$cat])[$i]->post_title .' ('.$id.') </a></td>
-                                <!--<td><a href="javascript:diagnose('.$GLOBALS[$cat][$i]->ID.')">🔍</a></td>-->
+                                . ($content[$cat])[$i]->post_title .' ('.$id.') </a></td>
+                                <!--<td><a href="javascript:diagnose('.$content[$cat][$i]->ID.')">🔍</a></td>-->
 
                                 <td><span>Missing <b>'. esc_html($temp_local_diagnostic->number_of_imgs - $temp_local_diagnostic->num_of_imgs_with_alt) .'</b> of '.esc_html($temp_local_diagnostic->number_of_imgs).'</span></td>
                             
