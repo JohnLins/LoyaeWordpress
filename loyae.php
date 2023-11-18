@@ -7,14 +7,32 @@
  * Author:            Loyae
  */
 
+include_once(plugin_dir_path(__FILE__) . 'includes/types.php');
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+
 global $wpdb;
 $wpdb->show_errors();
+
+function loyae_enqueue_styles() {
+    wp_enqueue_style('loyae-table-css', plugins_url('css/table.css', __FILE__));
+}
+
+add_action('admin_enqueue_scripts', 'loyae_enqueue_styles');
+
+function loyae_enqueue_script() {
+    wp_enqueue_script('loyae-js', plugins_url('js/scripts.js', __FILE__), array(), '1.0', true);
+}
+add_action('admin_enqueue_scripts', 'loyae_enqueue_script');
 
 
 
 add_action('admin_menu', 'loyae_menu');
 function loyae_menu() {
-    add_menu_page('Loyae Admin', 'Loyae', 'manage_options', 'my-page-slug', 'loyae_home', plugins_url('icon.ico', __FILE__), null);
+    add_menu_page('Loyae Admin', 'Loyae', 'manage_options', 'my-page-slug', 'loyae_home', plugins_url('assets/icon.ico', __FILE__), null);
 }
 
 
@@ -23,7 +41,7 @@ function loyae_menu() {
 //add_action( 'admin_post_loyae_form', 'loyae_admin_page' );
 function loyae_home(){
     echo '<br/><div><center>
-    <img src="'.esc_attr(plugins_url('icon.svg', __FILE__)).'" height="20px;"/> 
+    <img src="'.esc_attr(plugins_url('assets/icon.svg', __FILE__)).'" height="20px;"/> 
     <h1 style="display:inline-block;">Loyae </h1> <h6 style="display:inline-block;">V1.0.1</h6><br/>
     <br/><hr/><br/>
     <h2 id="loader" style="display:none">Loading... Please be patient as we diagnose these selected posts/pages (this may take time)</h2>
@@ -35,7 +53,7 @@ function loyae_home(){
     </script>';
     echo '<form method="post" action="">';
     echo '</br>';
-    echo get_submit_button( 'Diagnose all '. wp_count_posts('post')->publish . ' posts', 'primary', 'all', false, 'onclick="showLoader();"');
+    echo get_submit_button( 'Diagnose all '. esc_html(wp_count_posts('post')->publish) . ' posts', 'primary', 'all', false, 'onclick="showLoader();"');
     
     if(wp_count_posts('post')->publish > 20){
         echo '</br><br/>';
@@ -65,47 +83,26 @@ function loyae_home(){
 
 
 
-class Diagnostic {
-    public $is_meta_description;
-    public $is_meta_og_description;
-    public $is_meta_og_image;
-    public $is_meta_og_image_alt;
-    public $is_meta_og_image_width;
-    public $is_meta_og_image_height;
-    public $is_meta_og_image_type;
-    public $is_meta_og_site_name;
-    public $is_meta_og_keywords;
-    public $is_meta_og_title;
-    public $is_meta_og_url;
-    public $is_meta_og_type;
-    public $is_meta_keywords;
-    public $is_meta_theme_color;
-    public $is_meta_twitter_card;
-    public $is_meta_twitter_title;
-    public $is_meta_twitter_description;
-    public $is_meta_twitter_image;
-    public $is_meta_twitter_image_alt;
-    public  $is_meta_twitter_url;
-    public $is_meta_apple_mobile_web_app_status_bar_style;
-    public $is_meta_apple_mobile_web_app_title;
-    public $number_of_imgs;
-    public $num_of_imgs_with_alt;
-    public $cost_to_optimize;
-}
 
 
 
-function loyae_local_diagnostic($id){
-    $output = new Diagnostic();
 
-    $prices = null;
-    $pricesresp = wp_remote_get("https://api.loyae.com/prices");
-    if(!is_wp_error($pricesresp)){
-        $prices= json_decode(wp_remote_retrieve_body($pricesresp));
+function loyae_local_diagnostic($id, $calculate_cost){
+    $output = new loyae_Diagnostic();
+
+
+    $cost_to_optimize = 0;
+    if($calculate_cost == true){
+        $prices = null;
+        $pricesresp = wp_remote_get("https://api.loyae.com/prices");
+        if(!is_wp_error($pricesresp)){
+            $prices= json_decode(wp_remote_retrieve_body($pricesresp));
+        }
+
+        $cost_to_optimize = 3*$prices->DESCRIPTIONRATE + 2*$prices->ALTRATE + 17*$prices->SIMPLEMETARATE;
     }
     
 
-    $cost_to_optimize =3*$prices->DESCRIPTIONRATE + 2*$prices->ALTRATE + 17*$prices->SIMPLEMETARATE;
     $response = wp_remote_get( get_permalink($id) );
     $body = wp_remote_retrieve_body( $response );
     $dom = new DOMDocument();
@@ -132,6 +129,10 @@ function loyae_local_diagnostic($id){
 
     $metas = $dom->getElementsByTagName("meta");
     
+
+
+
+
 
     $output->is_meta_description = false;
     $output->is_meta_og_description = false;
@@ -168,37 +169,39 @@ function loyae_local_diagnostic($id){
         }
         
 
-        if($temp == "description"){$output->is_meta_description = true;$cost_to_optimize-=$prices->DESCRIPTIONRATE;}
-        if($temp == "og:description"){$output->is_meta_og_description = true;$cost_to_optimize-=$prices->DESCRIPTIONRATE;}
-        if($temp == "og:image"){$output->is_meta_og_image = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "og:image:alt"){$output->is_meta_og_image_alt = true;$cost_to_optimize-=$prices->ALTRATE;}
-        if($temp == "og:image:width"){$output->is_meta_og_image_width = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "og:image:height"){$output->is_meta_og_image_height = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "og:image:type"){$output->is_meta_og_image_type = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "og:site_name"){$output->is_meta_og_site_name = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "og:keywords"){$output->is_meta_og_keywords = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "og:title"){$output->is_meta_og_title = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "og:url"){$output->is_meta_og_url = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "og:type"){$output->is_meta_og_type = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "keywords"){$output->is_meta_keywords = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "theme-color"){$output->is_meta_theme_color = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "twitter:card"){$output->is_meta_twitter_card = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "twitter:title"){$output->is_meta_twitter_title = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "twitter:description"){$output->is_meta_twitter_description = true;$cost_to_optimize-=$prices->DESCRIPTIONRATE;}
-        if($temp == "twitter:image"){$output->is_meta_twitter_image = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image_alt = true;$cost_to_optimize-=$prices->ALTRATE;}
-        if($temp == "twitter:url"){$output->is_meta_twitter_url = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
-        if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;$cost_to_optimize-=$prices->SIMPLEMETARATE;}
+        if($temp == "description"){$output->is_meta_description = true;if($calculate_cost == true){$cost_to_optimize-=$prices->DESCRIPTIONRATE;}}
+        if($temp == "og:description"){$output->is_meta_og_description = true;if($calculate_cost == true){$cost_to_optimize-=$prices->DESCRIPTIONRATE;}}
+        if($temp == "og:image"){$output->is_meta_og_image = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "og:image:alt"){$output->is_meta_og_image_alt = true;if($calculate_cost == true){$cost_to_optimize-=$prices->ALTRATE;}}
+        if($temp == "og:image:width"){$output->is_meta_og_image_width = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "og:image:height"){$output->is_meta_og_image_height = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "og:image:type"){$output->is_meta_og_image_type = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "og:site_name"){$output->is_meta_og_site_name = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "og:keywords"){$output->is_meta_og_keywords = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "og:title"){$output->is_meta_og_title = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "og:url"){$output->is_meta_og_url = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "og:type"){$output->is_meta_og_type = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "keywords"){$output->is_meta_keywords = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "theme-color"){$output->is_meta_theme_color = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "twitter:card"){$output->is_meta_twitter_card = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "twitter:title"){$output->is_meta_twitter_title = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "twitter:description"){$output->is_meta_twitter_description = true;if($calculate_cost == true){$cost_to_optimize-=$prices->DESCRIPTIONRATE;}}
+        if($temp == "twitter:image"){$output->is_meta_twitter_image = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "twitter:image:alt"){$output->is_meta_twitter_image_alt = true;if($calculate_cost == true){$cost_to_optimize-=$prices->ALTRATE;}}
+        if($temp == "twitter:url"){$output->is_meta_twitter_url = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "apple-mobile-web-app-status-bar-style"){$output->is_meta_apple_mobile_web_app_status_bar_style = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
+        if($temp == "apple-mobile-web-app-title"){$output->is_meta_apple_mobile_web_app_title = true;if($calculate_cost == true){$cost_to_optimize-=$prices->SIMPLEMETARATE;}}
 
 
     }
 
-$output->cost_to_optimize = round($cost_to_optimize,2);
+    if($calculate_cost == true){
+        $output->cost_to_optimize = round($cost_to_optimize,2);
 
-if(abs($output->cost_to_optimize) < .01){
-    $output->cost_to_optimize = 0.00;
-}
+        if(abs($output->cost_to_optimize) < .01){
+            $output->cost_to_optimize = 0.00;
+        }
+    }
 
     return $output;
 }
@@ -206,7 +209,7 @@ if(abs($output->cost_to_optimize) < .01){
 
 add_action( 'admin_post_loyae_form', 'loyae_form_handler' );
 function loyae_admin_page($args) {
-
+    
    
     $content = array (
         'posts' => get_posts($args),
@@ -220,12 +223,12 @@ function loyae_admin_page($args) {
                 </script>';
 
 
-        $post_table = '<form action="admin-post.php" method="post">
+        echo '<form action="admin-post.php" method="post">
                        <input type="hidden" name="action" value="loyae_form">';
 
         foreach(array("posts", "pages") as $cat){
             if(!empty( $content[$cat] ) ){
-                $post_table .= '<center> Everything: <input type="checkbox" cost="0" onclick="toggle(this, `'.$cat.'`)" onchange="sumAmount(this)"/><br/><br/><div class="table-container"><table class="timecard">
+               echo '<center> Everything: <input type="checkbox" cost="0" onclick="toggle(this, `'.$cat.'`)" onchange="sumAmount(this)"/><br/><br/><div class="table-container"><table class="timecard">
                                 <caption>'.esc_html(ucfirst($cat)).'</caption>
                                 <thread>
                                 <tr>
@@ -244,9 +247,9 @@ function loyae_admin_page($args) {
                 for($i = 0; $i < count($content[$cat]); $i++){
                     $class = ''; if($i % 2 == 0){ $class = 'even';}else {$class = 'odd';}
                         $id = ($content[$cat])[$i]->ID;
-                        $temp_local_diagnostic = loyae_local_diagnostic($id);
+                        $temp_local_diagnostic = loyae_local_diagnostic($id, true);
                                 
-                                $post_table .= '<tr class="'. esc_attr($class) .'">
+                                echo '<tr class="'. esc_attr($class) .'">
 
 
                                 <td><input type="checkbox" name="'.$id.'_box" class="'.$cat.'" cost="'.$temp_local_diagnostic->cost_to_optimize.'" onchange="sumAmount(this)"/> ($'.$temp_local_diagnostic->cost_to_optimize.')</td>
@@ -293,11 +296,12 @@ function loyae_admin_page($args) {
 
                                 </tr>';
                 }
-                $post_table .= '</table></div></center> </br></br></br>';
+
+                echo '</table></div></center> </br></br></br>';
                 
         
             } else {
-                $post_table .= '<table class="timecard">
+                echo '<table class="timecard">
                                 <caption>'.esc_html(ucfirst($cat)).'</caption>
                                 <thread>NONE</thread>
                                 </table>';
@@ -309,52 +313,8 @@ function loyae_admin_page($args) {
 
 
         
-        
+    
 
-        $post_table .= '<script>
-
-                        function toggle(source, name) {
-                            checkboxes = document.getElementsByClassName(name);
-                            for(var i=0, n=checkboxes.length;i<n;i++) {
-                              checkboxes[i].checked = source.checked;
-                            }
-                            
-                          }
-
-                          function sumAmount(source) {
-                            var temp = 0.0;
-                            checkboxes = document.getElementsByClassName("pages")
-                            for(var i=0, n=checkboxes.length;i<n;i++) {
-                                if(checkboxes[i].checked){
-                                    temp += parseFloat(checkboxes[i].getAttribute("cost"));
-                                }
-                            }
-                            checkboxes = document.getElementsByClassName("posts")
-                            for(var i=0, n=checkboxes.length;i<n;i++) {
-                                if(checkboxes[i].checked){
-                                    temp += parseFloat(checkboxes[i].getAttribute("cost"));
-                                }
-                            }
-
-                            totalAmount = temp.toFixed(2);
-
-                            document.getElementById("optimize").setAttribute("value", "Optimize ($"+totalAmount+")");
-                            document.getElementById("amount").value = totalAmount;
-                          }
-
-                          function optmiz(){
-                            const o = document.getElementById("optimize");
-                            o.disable = true;
-                            o.style.backgroundColor="gray";
-                            o.value = "loading... (this will take a while)";
-                          }
-                          
-
-              
-                        </script>';
-
-
-        echo $post_table;
 
         echo   '<br/><!--<center>
                 <b>Override All Current:</b> Alt data: <input type="checkbox"/>, 
@@ -425,7 +385,7 @@ function loyae_admin_page($args) {
                 <br/><br/>
                 <div id="auth-logo">
                 <a href="https://www.authorize.net/">
-                <img src="https://www.authorize.net/content/dam/anet-redesign/reseller/authorizenet-200x50.png" border="0" alt="Authorize.net Logo" width="100" height="25"/>
+                <img src="'.esc_url(plugins_url('assets/authorizenet.png', __FILE__)).'" border="0" alt="Authorize.net Logo" width="100" height="25"/>
                 </a>
                 </div>
                 </div>
@@ -433,120 +393,7 @@ function loyae_admin_page($args) {
                 </div>
 
 
-                <style>
-                .table-container{
-                    overflow-y:scroll;
-                    max-height: 300px;
-                    
                 
-                    width: 90%;
-                    position: relative; 
-                    
-                }
-                
-                caption {
-                    border-top-right-radius: 10px;
-                    border-top-left-radius: 10px;
-                }
-                    
-                table.timecard {
-                    margin: auto;
-                    width: 100%;
-                    border-collapse: collapse;
-                    box-shadow: 0 0 25px gray;
-                }
-                
-                table.timecard caption {
-                    background-color: lightcoral;
-                    color: #fff;
-                    letter-spacing: .3em;
-                    padding: 4px;
-                }
-                
-                table.timecard thead th {
-                    padding: 8px;
-                    background-color: white;
-                    font-size: large;
-                }
-                
-                table.timecard thead th #thDay {
-                    width: 40%;	
-                }
-                
-                table.timecard thead th #thRegular, table.timecard thead th#thOvertime, table.timecard thead th#thTotal {
-                    width: 20%;
-                }
-                
-                table.timecard th, table.timecard td {
-                    padding: 3px;
-                    border-width: 1px;
-                    border-style: solid;
-                    border-color: #fdf1f1 lightgray;
-                }
-                
-                table.timecard td {
-                    text-align: left;
-                }
-                
-                table.timecard tbody th {
-                    text-align: left;
-                    font-weight: normal;
-                }
-                
-                table.timecard tr.even {
-                    background-color: #fdf1f1;
-                }
-                table.timecard tr.odd {
-                    background-color: white;
-                }
-                
-                input[type="submit"]{
-                    padding: 7px;
-                    margin: 7px;
-                    background-color: lightcoral;
-                    border-radius: 5px;
-                    border: 0;
-                    color: white;
-                    box-shadow: 0px 0px 15px lightgray;
-                }
-                
-                input[type="submit"]:hover {
-                    filter: brightness(95%);
-                    cursor: pointer;
-                }
-                    /*payment style*/
-                    input[type=text], input[type=number] {
-                        border-radius: 5px;
-                        border: 1px lightcoral solid;
-                        background-color:  #fdf1f1;
-                        height: 30px;
-                        padding: 5px;
-                        border: 2px;
-                    }
-                    
-                    #auth-logo {
-                        float: right;
-                    }
-                    
-                    #card-contain {
-                        height: auto;
-                        width: auto;
-                        position:relative;
-                        display: inline-block;
-                        border: 2px lightcoral solid;
-                        padding: 10px;
-                        border-radius: 7px; 
-                    }
-                    
-                    #outcard {
-                        display: flex;
-                        justify-content: center;
-                    }
-                    
-                    ::placeholder{
-                        color: lightcoral;
-                    }
-                </style>
 
 
 
@@ -559,41 +406,11 @@ function loyae_admin_page($args) {
 
     
         echo '<script>loader.style.display = "none";</script>';
+
+       
+        
        
 }
-
-
-
-
-
- class GeneratedMeta {
-    public $ID;
-    public $loyae_description;
-    public $loyae_og_description;
-    public $loyae_og_image;
-    public $loyae_og_image_alt;
-    public $loyae_og_image_width;
-    public $loyae_og_image_height;
-    public $loyae_og_image_type;
-    public $loyae_og_site_name;
-    public $loyae_og_title;
-    public $loyae_og_url;
-    public $loyae_og_type;
-    public $loyae_og_keywords;
-    public $loyae_keywords;
-    public $loyae_theme_color;
-    public $loyae_twitter_card;
-    public $loyae_twitter_title;
-    public $loyae_twitter_description;
-    public $loyae_twitter_image;
-    public $loyae_twitter_image_alt;
-    public $loyae_twitter_url;
-    public $loyae_apple_mobile_web_app_status_bar_style;
-    public $loyae_apple_mobile_web_app_title;
-    public $loyae_optimized;
-    public $loyae_alt;
- }
-
 
 
 function loyae_null_case($str){
@@ -607,7 +424,7 @@ function loyae_null_case($str){
 function loyae_get_generated_meta($id, $email, $cardnum){
     $rootapiurl = "https://api.loyae.com";//"http://localhost:8080";
 
-    $meta = new GeneratedMeta();
+    $meta = new loyae_GeneratedMeta();
     $post_class = get_post($id);
 
 
@@ -668,27 +485,28 @@ function loyae_get_generated_meta($id, $email, $cardnum){
     $json_data = json_encode($data);
     
     
-    $ch = curl_init($apiurl);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
-    $response = curl_exec($ch);
-    if ($response === false) {
-        echo 'cURL error: ' . curl_error($ch);
-    }
+    $response = wp_remote_post(
+        $apiurl,
+        array(
+            'headers'   => array('Content-Type' => 'application/json'),
+            'body'      => $json_data,
+            'timeout'   => 86400, //Will take 24 hours to timeout
+            'sslverify' => true, 
+        )
+    );
     
-    curl_close($ch);
-   
-    $response_data = $response ? json_decode($response, true) : null;
-    //echo "Response: ";
-    //var_dump($response_data);
+    if (is_wp_error($response)) {
+        echo 'HTTP error: ' . esc_html($response->get_error_message());
+    } else {
+        $response_data = wp_remote_retrieve_body($response);
+        $response_data = $response_data ? json_decode($response_data, true) : null;
+    }
     
 
 
 if($response_data != null){
 
-   $diagnostic = loyae_local_diagnostic($id);
+   $diagnostic = loyae_local_diagnostic($id, false);
     $meta->ID = $id;
     $meta->loyae_description = (!$diagnostic->is_meta_description) ? loyae_null_case($response_data['Metas']['description']): "<NULL>";
     $meta->loyae_og_description = (!$diagnostic->is_meta_og_description) ? loyae_null_case($response_data['Metas']['og:description']): "<NULL>";
@@ -717,6 +535,47 @@ if($response_data != null){
 
     $temp_loyae_alt = $response_data['Alts'];
     $meta->loyae_alt = serialize($temp_loyae_alt);
+
+
+
+
+    //INSERT ALT HERE, ONLY ONCE
+    $loyae_alt = unserialize($meta->loyae_alt);
+   
+    
+    $post_content = get_post_field('post_content', get_the_ID());
+
+
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $dom->loadHTML($post_content);
+    libxml_use_internal_errors(false);
+
+    
+    $images = $dom->getElementsByTagName('img');
+
+    
+    foreach ($images as $image) {
+        $src = $image->getAttribute('src');
+        if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
+            $image->setAttribute('alt', esc_attr($loyae_alt[$src]));
+        }
+    }
+
+    
+    $updated_post_content = $dom->saveHTML();
+
+    
+    $update_post_args = array(
+        'ID'           => get_the_ID(),
+        'post_content' => $updated_post_content,
+    );
+
+    remove_action( 'post_updated', 'wp_save_post_revision' );
+    wp_update_post($update_post_args);
+    add_action( 'post_updated', 'wp_save_post_revision' );
+
+
         
 }
 
@@ -806,7 +665,6 @@ function loyae_form_handler() {
 
                 echo '<br/><br/>';
                 $result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data);
-                print_r($result);
                  
     
 
@@ -919,53 +777,17 @@ function loyae_add_meta_tag() {
 
                 echo '<!--LOYAE END-->'."\n";
 
-                $loyae_alt = unserialize($meta->loyae_alt);
-                //echo "LOYAE ALT IN ADD META BEFORE }" . $loyae_alt;
-                //print_r($loyae_alt);
-            }
-   
-            //echo "LOYAE ALT IN ADD META AFTER }" . $loyae_alt;
-            //print_r($loyae_alt);
-
-        
-            $post_content = get_post_field('post_content', get_the_ID());
-
-            
-            $dom = new DOMDocument();
-            libxml_use_internal_errors(true);
-            $dom->loadHTML($post_content);
-            libxml_use_internal_errors(false);
-
-            
-            $images = $dom->getElementsByTagName('img');
-
-            
-            foreach ($images as $image) {
-                $src = $image->getAttribute('src');
-                if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
-                    $image->setAttribute('alt', $loyae_alt[$src]);
-                }
-            }
-
-            
-            $updated_post_content = $dom->saveHTML();
-
-            
-            $update_post_args = array(
-                'ID'           => get_the_ID(),
-                'post_content' => $updated_post_content,
-            );
-
-            remove_action( 'post_updated', 'wp_save_post_revision' );
-            wp_update_post($update_post_args);
-            add_action( 'post_updated', 'wp_save_post_revision' );
-        }
+            }     
+    }
 }
 
 
 
 
 add_action( 'wp_head', 'loyae_add_meta_tag');
+
+
+
 
 
 
