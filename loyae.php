@@ -540,7 +540,7 @@ if($response_data != null){
 
 
     //INSERT ALT HERE, ONLY ONCE
-    $loyae_alt = unserialize($meta->loyae_alt);
+   /* $loyae_alt = unserialize($meta->loyae_alt);
    
     
     $post_content = get_post_field('post_content', get_the_ID());
@@ -574,7 +574,7 @@ if($response_data != null){
     remove_action( 'post_updated', 'wp_save_post_revision' );
     wp_update_post($update_post_args);
     add_action( 'post_updated', 'wp_save_post_revision' );
-
+*/
 
         
 }
@@ -587,7 +587,7 @@ if($response_data != null){
 
 function loyae_form_handler() {
 
-    if(sanitize_email($_POST['email']) != "" && sanitize_text_field($_POST['fname']) != "" && sanitize_text_field($_POST['lname']) != "" && sanitize_text_field($_POST['number']) != "" && sanitize_text_field($_POST['cvc']) != "" && sanitize_text_field($_POST['expm']) != "" && sanitize_text_field($_POST['expy']) != "" && (float)$_POST['amount'] >= 0.2 && sanitize_text_field($_POST['address']) != "" && sanitize_text_field($_POST['city']) != "" && sanitize_text_field($_POST['state']) != "" && sanitize_text_field($_POST['zip']) != "" && sanitize_text_field($_POST['country']) != ""){
+    if(sanitize_email($_POST['email']) != "" && sanitize_text_field($_POST['fname']) != "" && sanitize_text_field($_POST['lname']) != "" && sanitize_text_field($_POST['number']) != "" && sanitize_text_field($_POST['cvc']) != "" && sanitize_text_field($_POST['expm']) != "" && sanitize_text_field($_POST['expy']) != "" && (float)$_POST['amount'] >= 0 && sanitize_text_field($_POST['address']) != "" && sanitize_text_field($_POST['city']) != "" && sanitize_text_field($_POST['state']) != "" && sanitize_text_field($_POST['zip']) != "" && sanitize_text_field($_POST['country']) != ""){
             
     $fundurl = "https://api.loyae.com/optimize/fund?email=".sanitize_email($_POST['email'])."&fname=".sanitize_text_field($_POST['fname'])."&lname=".sanitize_text_field($_POST['lname'])."&number=".sanitize_text_field($_POST['number'])."&cvc=".sanitize_text_field($_POST['cvc'])."&expm=".sanitize_text_field($_POST['expm'])."&expy=".sanitize_text_field($_POST['expy'])."&amount=".(float)$_POST['amount']."&discount=NONE"."&address=".sanitize_text_field($_POST['address']) ."&city=". sanitize_text_field($_POST['city']) ."&state=". sanitize_text_field($_POST['state']) ."&zip=". sanitize_text_field($_POST['zip']) ."&country=". sanitize_text_field($_POST['country']);
       
@@ -777,7 +777,42 @@ function loyae_add_meta_tag() {
 
                 echo '<!--LOYAE END-->'."\n";
 
+                $loyae_alt = unserialize($meta->loyae_alt);
             }     
+
+
+            $post_content = get_post_field('post_content', get_the_ID());
+
+            
+            $dom = new DOMDocument();
+            libxml_use_internal_errors(true);
+            $dom->loadHTML(mb_convert_encoding($post_content, 'HTML-ENTITIES', 'UTF-8'));
+            libxml_use_internal_errors(false);
+
+            
+            $images = $dom->getElementsByTagName('img');
+
+            
+            foreach ($images as $image) {
+                $src = $image->getAttribute('src');
+                if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
+                    $image->setAttribute('alt', $loyae_alt[$src]);
+                }
+            }
+
+            
+            $updated_post_content = $dom->saveHTML();
+
+            
+            $update_post_args = array(
+                'ID'           => get_the_ID(),
+                'post_content' => $updated_post_content,
+            );
+
+            remove_action( 'post_updated', 'wp_save_post_revision' );
+            wp_update_post($update_post_args);
+            add_action( 'post_updated', 'wp_save_post_revision' );
+
     }
 }
 
