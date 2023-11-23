@@ -94,7 +94,7 @@ function loyae_local_diagnostic($id, $calculate_cost){
     $cost_to_optimize = 0;
     if($calculate_cost == true){
         $prices = null;
-        $pricesresp = wp_remote_get("https://api.loyae.com/prices");
+        $pricesresp = wp_remote_get("https://api.loyae.com/prices?who=".sanitize_text_field(home_url()));
         if(!is_wp_error($pricesresp)){
             $prices= json_decode(wp_remote_retrieve_body($pricesresp));
         }
@@ -677,7 +677,7 @@ function loyae_form_handler() {
             echo 'There was an error with your payment';
         }
     } else {
-        echo 'Please properly enter your card information in its entirety';
+        echo 'ERROR: Please select at least one page to optimize and enter your card information in its entirety';
     }
 }
 
