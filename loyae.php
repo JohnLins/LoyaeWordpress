@@ -37,20 +37,13 @@ function loyae_menu() {
 
 
 
-
-//add_action( 'admin_post_loyae_form', 'loyae_admin_page' );
 function loyae_home(){
     echo '<br/><div><center>
     <img src="'.esc_attr(plugins_url('assets/icon.svg', __FILE__)).'" height="20px;"/> 
     <h1 style="display:inline-block;">Loyae </h1> <h6 style="display:inline-block;">V1.0.1</h6><br/>
     <br/><hr/><br/>
     <h2 id="loader" style="display:none">Loading... Please be patient as we diagnose these selected posts/pages (this may take time)</h2>
-    </div></center>
-    <script>const loader = document.getElementById("loader");
-    function showLoader() {
-        loader.style.display = "block";
-    }
-    </script>';
+    </div></center>';
     echo '<form method="post" action="">';
     echo '</br>';
     echo get_submit_button( 'Diagnose all '. esc_html(wp_count_posts('post')->publish) . ' posts', 'primary', 'all', false, 'onclick="showLoader();"');
@@ -79,10 +72,6 @@ function loyae_home(){
 
 
 }
-
-
-
-
 
 
 
@@ -539,42 +528,7 @@ if($response_data != null){
 
 
 
-    //INSERT ALT HERE, ONLY ONCE
-   /* $loyae_alt = unserialize($meta->loyae_alt);
-   
-    
-    $post_content = get_post_field('post_content', get_the_ID());
-
-
-    $dom = new DOMDocument();
-    libxml_use_internal_errors(true);
-    $dom->loadHTML($post_content);
-    libxml_use_internal_errors(false);
-
-    
-    $images = $dom->getElementsByTagName('img');
-
-    
-    foreach ($images as $image) {
-        $src = $image->getAttribute('src');
-        if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
-            $image->setAttribute('alt', esc_attr($loyae_alt[$src]));
-        }
-    }
-
-    
-    $updated_post_content = $dom->saveHTML();
-
-    
-    $update_post_args = array(
-        'ID'           => get_the_ID(),
-        'post_content' => $updated_post_content,
-    );
-
-    remove_action( 'post_updated', 'wp_save_post_revision' );
-    wp_update_post($update_post_args);
-    add_action( 'post_updated', 'wp_save_post_revision' );
-*/
+   //Alt text could potentially be inputted here
 
         
 }
@@ -586,7 +540,7 @@ if($response_data != null){
 
 
 function loyae_form_handler() {
-
+    //Check to make sure the form is filled out
     if(sanitize_email($_POST['email']) != "" && sanitize_text_field($_POST['fname']) != "" && sanitize_text_field($_POST['lname']) != "" && sanitize_text_field($_POST['number']) != "" && sanitize_text_field($_POST['cvc']) != "" && sanitize_text_field($_POST['expm']) != "" && sanitize_text_field($_POST['expy']) != "" && (float)$_POST['amount'] >= 0 && sanitize_text_field($_POST['address']) != "" && sanitize_text_field($_POST['city']) != "" && sanitize_text_field($_POST['state']) != "" && sanitize_text_field($_POST['zip']) != "" && sanitize_text_field($_POST['country']) != ""){
             
     $fundurl = "https://api.loyae.com/optimize/fund?email=".sanitize_email($_POST['email'])."&fname=".sanitize_text_field($_POST['fname'])."&lname=".sanitize_text_field($_POST['lname'])."&number=".sanitize_text_field($_POST['number'])."&cvc=".sanitize_text_field($_POST['cvc'])."&expm=".sanitize_text_field($_POST['expm'])."&expy=".sanitize_text_field($_POST['expy'])."&amount=".(float)$_POST['amount']."&discount=NONE"."&address=".sanitize_text_field($_POST['address']) ."&city=". sanitize_text_field($_POST['city']) ."&state=". sanitize_text_field($_POST['state']) ."&zip=". sanitize_text_field($_POST['zip']) ."&country=". sanitize_text_field($_POST['country']);
@@ -615,7 +569,7 @@ function loyae_form_handler() {
             echo "<div style='text-align:center; font-family: arial'><span style='color:green;font-size: 25px;'>Thank You!</span><br/><br/>
             <span style='color:black;font-size: 20px;'>PLEASE CONTACT US AT contact@loyae.com IF ISSUES ARISE</span><br/><br/>
             <span style='color:black;font-size: 20px;'>Note: sometimes Loyae will deliberately avoid placing some metadata on pages with not enough content.</span><br/><br/>
-            <br/><span style='font-size: 30px'>LOGS:</span><br/><br/></div>";
+            <br/><br/><br/></div>";
             $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
             $entry = "";
             for($i = 0; $i < count($data_entries); $i++){
@@ -644,10 +598,8 @@ function loyae_form_handler() {
                         
                         if($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id))==0){
                             $generated_data = loyae_get_generated_meta($id, sanitize_email($_POST['email']), (string)($_POST['number']));
-                            //echo "THING:".$generated_data["ID"];
+                            
                             if($generated_data["ID"] != null){
-                                //print_r($generated_data);
-                                //echo "<br/><br/><br/>";
                                 $wpdb->insert($loyae_generated_data, $generated_data);
                             }
                         }
@@ -800,7 +752,7 @@ function loyae_add_meta_tag() {
                 }
             }
 
-            
+            //Insert alt text
             $updated_post_content = $dom->saveHTML();
 
             
@@ -820,8 +772,6 @@ function loyae_add_meta_tag() {
 
 
 add_action( 'wp_head', 'loyae_add_meta_tag');
-
-
 
 
 
