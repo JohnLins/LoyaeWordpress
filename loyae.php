@@ -46,11 +46,11 @@ function loyae_home(){
     </div></center>';
     echo '<form method="post" action="">';
     echo '</br>';
-    echo get_submit_button( 'Diagnose all '. esc_html(wp_count_posts('post')->publish) . ' posts', 'primary', 'all', false, 'onclick="showLoader();"');
+    echo get_submit_button(  esc_html('Diagnose all '. esc_html(wp_count_posts('post')->publish) . ' posts'), 'primary', 'all', false, 'onclick="showLoader();"');
     
     if(wp_count_posts('post')->publish > 20){
         echo '</br><br/>';
-        echo get_submit_button( 'Diagnose the last 10 posts (takes less time to load)', 'primary', 'some', false, 'onclick="showLoader();"');
+        echo get_submit_button(  esc_html('Diagnose the last 10 posts (takes less time to load)'), 'primary', 'some', false, 'onclick="showLoader();"');
     }
 
     echo '</form>';
