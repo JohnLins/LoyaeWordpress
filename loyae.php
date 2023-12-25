@@ -594,7 +594,7 @@ function loyae_form_handler() {
                 foreach($keys as $p){ //for each page ID that was selected in the form
                     $id = (int)substr($p, 0, strpos($p, "_"));
 
-                    if($id != $form_id){
+                    if($id != $form_id && !empty($id)){
                         
                         if($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id))==0){
                             $generated_data = loyae_get_generated_meta($id, sanitize_email($_POST['email']), (string)($_POST['number']));
@@ -615,14 +615,6 @@ function loyae_form_handler() {
 
 
 
-                echo '<br/><br/>';
-                $result = $wpdb->get_results ( "SELECT * FROM ".$loyae_generated_data);
-                 
-    
-
-                echo '</br>';
-                exit("FINISHED LOADING");
-
             
             
         } else {
@@ -642,10 +634,9 @@ function loyae_add_meta_tag() {
     $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
         if(is_single() or is_page()){
-            $loyae_alt = NULL;
             $meta = NULL;
             $q =  $loyae_generated_data . ' WHERE ID = '. get_the_ID();
-            if($wpdb->get_var("SHOW TABLES LIKE '$loyae_generated_data'") == $loyae_generated_data && $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM ' . $q))){
+            if(!empty($q) && $wpdb->get_var("SHOW TABLES LIKE '$loyae_generated_data'") == $loyae_generated_data && $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM ' . $q))){
                 $meta = ($wpdb->get_results('SELECT * FROM ' . $q))[0];
             }
                 
@@ -729,51 +720,63 @@ function loyae_add_meta_tag() {
 
                 echo '<!--LOYAE END-->'."\n";
 
-                $loyae_alt = unserialize($meta->loyae_alt);
+               
             }     
 
 
-            $post_content = get_post_field('post_content', get_the_ID());
-
-            
-            $dom = new DOMDocument();
-            libxml_use_internal_errors(true);
-            $dom->loadHTML(mb_convert_encoding($post_content, 'HTML-ENTITIES', 'UTF-8'));
-            libxml_use_internal_errors(false);
-
-            
-            $images = $dom->getElementsByTagName('img');
-
-            
-            foreach ($images as $image) {
-                $src = $image->getAttribute('src');
-                if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
-                    $image->setAttribute('alt', $loyae_alt[$src]);
-                }
-            }
-
-            //Insert alt text
-            $updated_post_content = $dom->saveHTML();
-
-            
-            $update_post_args = array(
-                'ID'           => get_the_ID(),
-                'post_content' => $updated_post_content,
-            );
-
-            remove_action( 'post_updated', 'wp_save_post_revision' );
-            wp_update_post($update_post_args);
-            add_action( 'post_updated', 'wp_save_post_revision' );
+           
 
     }
 }
-
-
 
 
 add_action( 'wp_head', 'loyae_add_meta_tag');
 
 
 
+function loyae_add_alt_text($post_content) {
+    global $wpdb;
+    $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
+
+    $loyae_alt = NULL;
+    $meta = NULL;
+    $q =  $loyae_generated_data . ' WHERE ID = '. get_the_ID();
+    if(!empty($q) && !empty(get_the_ID()) && $wpdb->get_var("SHOW TABLES LIKE '$loyae_generated_data'") == $loyae_generated_data && $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM ' . $q))){
+        $meta = ($wpdb->get_results('SELECT * FROM ' . $q))[0];
+    }
+        
+
+
+    if($meta != NULL){
+        $loyae_alt = unserialize($meta->loyae_alt);
+    }     
+
+
+    
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $dom->loadHTML(mb_convert_encoding($post_content, 'HTML-ENTITIES', 'UTF-8'));
+    libxml_use_internal_errors(false);
+
+    
+    $images = $dom->getElementsByTagName('img');
+
+    
+    foreach ($images as $image) {
+        $src = $image->getAttribute('src');
+        if($loyae_alt != null && array_key_exists($src, $loyae_alt)){
+            $image->setAttribute('alt', $loyae_alt[$src]);
+        }
+    }
+
+    //Insert alt text
+    $updated_post_content = $dom->saveHTML();
+
+    return $updated_post_content;
+}
+
+
+
+add_filter('the_content', 'loyae_add_alt_text');
 
 ?>
