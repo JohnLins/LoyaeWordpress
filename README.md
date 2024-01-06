@@ -11,10 +11,15 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 [Loyae](https://loyae.com/) seamlessly uses machine learning to optimize web pages for searchability (SEO), usability, and accessibility by automatically generating & inserting metadata/alt text.
 
 Select the pages you want to optimize (You may select them all)
+
 ![Plugin](assets/plugin.png)
+
 Meta tags:
+
 ![Meta](assets/meta.png)
+
 Alt text:
+
 ![Alt](assets/alt.png)
 
 Generate meta descriptions, alt text, open graph meta tags, and much much more.
@@ -22,7 +27,25 @@ Generate meta descriptions, alt text, open graph meta tags, and much much more.
 [youtube https://youtu.be/SXJGmWoe99Q]
 
 == 3rd Parties ==
+For legal reasons, here are all 3rd party APIs used:
+
 The only external API that the Loyae plugin interfaces with is via the api.loyae.com endpoints. Loyae's API interfaces with other 3rd party APIs on the back-end, such as authorize.net for payments (https://www.authorize.net/about-us/terms.html); Loyae is PCI-compliant.
+
+
+Internal:
+
+Check prices API (it also records the homepage as the "who" parameter, this is for customer insight):
+https://api.loyae.com/prices?who=
+
+Credits your account:
+https://api.loyae.com/optimize/fund
+
+
+Main API endpoint (used for generating the metadata):
+https://api.loyae.com/optimize/manual
+This endpoint inputs the content and images of a given page of your website.
+
+Loyae terms: https://loyae.com/terms.pdf
 
 
 
