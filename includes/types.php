@@ -1,4 +1,9 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class loyae_Diagnostic {
     public $is_meta_description;
     public $is_meta_og_description;
