@@ -131,14 +131,14 @@ function loyae_home(){
 
 
     // Check nonce and user capability before handling form submissions
-    if ( isset( $_POST['all'] ) && isset( $_POST['loyae_diagnose_nonce_field'] ) && wp_verify_nonce( $_POST['loyae_diagnose_nonce_field'], 'loyae_diagnose_nonce' ) && current_user_can( 'manage_options' ) ) {
+    if ( isset( $_POST['all'] ) && isset( $_POST['loyae_diagnose_nonce_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash ( $_POST['loyae_diagnose_nonce_field'])), 'loyae_diagnose_nonce' ) && current_user_can( 'manage_options' ) ) {
         loyae_admin_page(array(
             'numberposts'	=> -1,
             'category'		=> 0
         ));
     }
 
-    if ( isset( $_POST['some'] ) && isset( $_POST['loyae_diagnose_nonce_field'] ) && wp_verify_nonce( $_POST['loyae_diagnose_nonce_field'], 'loyae_diagnose_nonce' ) && current_user_can( 'manage_options' ) ) {
+    if ( isset( $_POST['some'] ) && isset( $_POST['loyae_diagnose_nonce_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash ( $_POST['loyae_diagnose_nonce_field'])), 'loyae_diagnose_nonce' ) && current_user_can( 'manage_options' ) ) {
         loyae_admin_page(array(
             'numberposts'	=> 10,
             'category'		=> 0
@@ -620,7 +620,7 @@ if($response_data != null){
 function loyae_form_handler() {
 
     // Verify nonce
-    if( isset( $_POST['loyae_form_nonce_field'] ) && wp_verify_nonce( $_POST['loyae_form_nonce_field'], 'loyae_form_nonce' ) && current_user_can( 'manage_options' )) {
+    if( isset( $_POST['loyae_form_nonce_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash ( $_POST['loyae_form_nonce_field'])), 'loyae_form_nonce' ) && current_user_can( 'manage_options' )) {
         //Check to make sure the form is filled out
         if( sanitize_email($_POST['email']) != "" && sanitize_text_field($_POST['fname']) != "" && sanitize_text_field($_POST['lname']) != "" && sanitize_text_field($_POST['number']) != "" && sanitize_text_field($_POST['cvc']) != "" && sanitize_text_field($_POST['expm']) != "" && sanitize_text_field($_POST['expy']) != "" && floatVal(sanitize_text_field( $_POST['amount'])) >= 0 && sanitize_text_field($_POST['address']) != "" && sanitize_text_field($_POST['city']) != "" && sanitize_text_field($_POST['state']) != "" && sanitize_text_field($_POST['zip']) != "" && sanitize_text_field($_POST['country']) != ""){
 
@@ -685,7 +685,7 @@ function loyae_form_handler() {
                                 // Check if the ID doesn't exist in the database
                                 if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$loyae_generated_data} WHERE ID = %d", $id)) == 0) {
                                     // Get generated data
-                                    $generated_data = loyae_get_generated_meta($id, sanitize_email($_POST['email']), sanitize_text_field((string)($_POST['number'])));
+                                    $generated_data = loyae_get_generated_meta($id, sanitize_email($_POST['email']), sanitize_text_field($_POST['number']));
 
                                     // Check if generated data ID is not null
                                     if ($generated_data["ID"] != null) {
