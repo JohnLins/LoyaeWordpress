@@ -110,3 +110,13 @@ input[type=text], input[type=number] {
 ::placeholder{
     color: lightcoral;
 }
+
+
+
+#fundslink {
+    padding: 9px;
+    margin: 7px;
+    background-color: lightgray;
+    border-radius: 5px;
+    border: 0;
+}

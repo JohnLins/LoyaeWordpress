@@ -32,6 +32,10 @@ function sumAmount(source) {
   totalAmount = temp.toFixed(2);
 
   document.getElementById("optimize").setAttribute("value", "Optimize ($"+totalAmount+")");
+  document.getElementById("fundslink").innerHTML = "Add Funds ($"+totalAmount+") ↗";
+  document.getElementById("fundslink").setAttribute("href", "https://loyae.com/payment.html?amount="+totalAmount);
+
+
   document.getElementById("amount").value = totalAmount;
 }
 
