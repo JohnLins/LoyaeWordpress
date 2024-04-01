@@ -381,92 +381,45 @@ function loyae_admin_page($args) {
     
 
 
-        echo   '<br/><!--<center>
-                <b>Override All Current:</b> Alt data: <input type="checkbox"/>, 
-                Meta Descriptions: <input type="checkbox"/>, 
-                Meta Keywords: <input type="checkbox"/>,
-                Open Graph Meta Tags: <input type="checkbox"/>,
-                Essential Tags: <input type="checkbox"/>,
-                Non-Essential Tags: <input type="checkbox"/>
-
-                <br/></center>-->
+        echo   '<br/>
 
 
-
-
-
-                <!--payment-->
                 <div id="outcard">
+
+
                 <div id="card-contain">
                 <div style="text-align: left;">
-                <div class="input-label">First Name</div>
-                <input type="text" name="fname"/>
-                <br/><br/>
 
-                <div class="input-label">Last Name</div>
-                <input type="text" name="lname"/>
-                <br/><br/>
+                <b>Step 1. Get code</b><br/><br/>
+                <center>
+                <a href="https://loyae.com/payment.html?amount=0" target="_blank" id="fundslink" style="margin: 7px">Add funds ($0.00) ↗</a><br/>
+                </center><br/>
+                <b>Step 2.</b><br/><br/>
+
 
                 <div class="input-label">Email</div>
                 <input type="text" name="email"/>
                 <br/><br/>
 
-                <div class="input-label">Card Number </div>
-                <input type="text" name="number" maxlength="16" placeholder="• • • •   • • • •   • • • •   • • • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
-                <br/><br/>
+                <div class="input-label">6-Digit Code</div>
+                <input type="text" name="number" maxlength="6"/>
 
-                <div class="input-label">CVC</div>
-                <input type="text" name="cvc" maxlength="3" style="width: 60px;" placeholder="• • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
-                <br/><br/>
-
-                <div class="input-label">Expiration Year</div>
-                <input type="text" name="expy" maxlength="4" style="width: 80px;" placeholder="20 • •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
-                <br/><br/>
-
-                <div class="input-label">Expiration month</div>
-                <input type="text" name="expm" maxlength="2" min="1" max="12" style="width: 50px;" placeholder="• •" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
-                <br/><br/>
-
-                <div class="input-label">Billing Address</div>
-                <input type="text" name="address"/>
-                <br/><br/>
-
-                <div class="input-label">City</div>
-                <input type="text" name="city"/>
-                <br/><br/>
-
-                <div class="input-label">State</div>
-                <input type="text" name="state"/>
-                <br/><br/>
-
-                <div class="input-label">Zip or Postal Code</div>
-                <input type="text" name="zip"/>
-                <br/><br/>
-                <div class="input-label">Country</div>
-                <input type="text" name="country"/>
-
+                <br/>
 
                 <input type="number" name="amount" id="amount" step="0.01" min="0" style="display:none"/>
-                <br/><br/>
-                <div id="auth-logo">
-                <a href="https://www.authorize.net/">
-                <img src="'.esc_url(plugins_url('assets/authorizenet.png', __FILE__)).'" border="0" alt="Authorize.net Logo" width="100" height="25"/>
-                </a>
-                </div>
-                </div>
-                </div>
-                </div>
 
-
-                
-
-
-
-                <br/><center>
-                <p>By continuing, you agree to the <a href="https://www.loyae.com/terms.pdf">terms</a></p>
                 <br/>
-                <input type="submit" name="optimize" value="Optimize ($0.00)" id="optimize" onclick="return optmiz()"/>
+                <center>
+                    <input type="submit" name="optimize" value="Optimize ($0.00)" id="optimize" onclick="return optmiz()"/><br/>
+                    <p>By continuing, you agree to the <a href="https://www.loyae.com/terms.pdf">terms</a></p>
                 </center>
+
+                </div>
+                </div>
+                </div>
+
+
+
                 </form>';
 
     
@@ -622,9 +575,13 @@ function loyae_form_handler() {
     // Verify nonce
     if( isset( $_POST['loyae_form_nonce_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash ( $_POST['loyae_form_nonce_field'])), 'loyae_form_nonce' ) && current_user_can( 'manage_options' )) {
         //Check to make sure the form is filled out
-        if( sanitize_email($_POST['email']) != "" && sanitize_text_field($_POST['fname']) != "" && sanitize_text_field($_POST['lname']) != "" && sanitize_text_field($_POST['number']) != "" && sanitize_text_field($_POST['cvc']) != "" && sanitize_text_field($_POST['expm']) != "" && sanitize_text_field($_POST['expy']) != "" && floatVal(sanitize_text_field( $_POST['amount'])) >= 0 && sanitize_text_field($_POST['address']) != "" && sanitize_text_field($_POST['city']) != "" && sanitize_text_field($_POST['state']) != "" && sanitize_text_field($_POST['zip']) != "" && sanitize_text_field($_POST['country']) != ""){
+        if( sanitize_email($_POST['email']) != "" && sanitize_text_field($_POST['number']) != ""){
 
-            $fundurl = "https://api.loyae.com/optimize/fund?email=".sanitize_email($_POST['email'])."&fname=".sanitize_text_field($_POST['fname'])."&lname=".sanitize_text_field($_POST['lname'])."&number=".sanitize_text_field($_POST['number'])."&cvc=".sanitize_text_field($_POST['cvc'])."&expm=".sanitize_text_field($_POST['expm'])."&expy=".sanitize_text_field($_POST['expy'])."&amount=".floatVal(sanitize_text_field( $_POST['amount']))."&discount=NONE"."&address=".sanitize_text_field($_POST['address']) ."&city=". sanitize_text_field($_POST['city']) ."&state=". sanitize_text_field($_POST['state']) ."&zip=". sanitize_text_field($_POST['zip']) ."&country=". sanitize_text_field($_POST['country']);
+
+
+
+
+            $fundurl = "https://api.loyae.com/credits?email=".sanitize_email($_POST['email'])."&CardNum=".sanitize_text_field($_POST['number']);
 
            $funddata = null;
             $fund = wp_remote_get($fundurl);
@@ -633,7 +590,9 @@ function loyae_form_handler() {
             }
 
 
-            if ($funddata != null && $funddata->Err === false){
+            if ($funddata != null && $funddata->Err === false && $funddata->Funds >= floatVal(sanitize_text_field( $_POST['amount']))){
+
+
 
 
                 global $wpdb;
@@ -708,8 +667,9 @@ function loyae_form_handler() {
 
 
             } else {
-                echo 'There was an error with your payment';
+                echo 'There was an error with your payment. Make sure you enter the correct code.';
             }
+
         } else {
             echo 'ERROR: Please select at least one page to optimize and enter your card information in its entirety';
         }
