@@ -2,11 +2,11 @@
 Contributors: loyae
 Tags: seo, ai, alt text, nlp, meta tags, metadata, open graph, search engine optimization, artificial intelligence, natural language, optimization, NLP
 Requires at least: 4.7
-Tested up to: 6.3
-Stable tag: 1.0.1
+Tested up to: 6.5.2
+Stable tag: 1.0.2
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-
+SEO friendly AI-generated HTML metadata and alt text in bulk; automatically inserts into select pages.
 == Description ==
 [Loyae](https://loyae.com/) seamlessly uses machine learning to optimize web pages for searchability (SEO), usability, and accessibility by automatically generating & inserting metadata/alt text.
 

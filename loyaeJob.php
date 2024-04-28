@@ -227,7 +227,7 @@ function loyae_admin_page($args) {
                 loader.style.display = "none";
                 </script>';
 
-        echo "<center><h3>Select pages below</h3></center></br>";
+
         echo '<form action="admin-post.php" method="post">';
         wp_nonce_field( 'loyae_form_nonce', 'loyae_form_nonce_field' );
         echo '<input type="hidden" name="action" value="loyae_form">';
@@ -507,7 +507,40 @@ if($response_data != null){
 }
 
 
+function loyae_async_optimize($POSTcopy){
+    global $wpdb;
+    $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
+  // Iterate through $_POST keys
+    foreach($POSTcopy as $key => $value) {
+        // Sanitize the key to ensure it's safe to use
+        $sanitized_key = sanitize_key($key);
+
+        // Extract the ID from the key
+        $id = (int)substr($sanitized_key, 0, strpos($sanitized_key, "_"));
+
+        // Check if the ID is valid and not empty
+        if (!empty($id)) {
+            // Check if the ID is different from the form ID
+            if ($id != $form_id) {
+                // Check if the ID doesn't exist in the database
+                if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$loyae_generated_data} WHERE ID = %d", $id)) == 0) {
+                    // Get generated data
+                    $generated_data = loyae_get_generated_meta($id, sanitize_email($POSTcopy['email']), sanitize_text_field($POSTcopy['number']));
+
+                    // Check if generated data ID is not null
+                    if ($generated_data["ID"] != null) {
+                        // Insert generated data into the database
+                        $wpdb->insert($loyae_generated_data, $generated_data);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+//add_action('loyae_async_task_hook', 'loyae_async_optimize');
 
 
 
@@ -570,40 +603,22 @@ function loyae_form_handler() {
 
                 echo '<br/><br/>';
 
-                    // Iterate through $_POST keys
-                    foreach($_POST as $key => $value) {
-                        // Sanitize the key to ensure it's safe to use
-                        $sanitized_key = sanitize_key($key);
-
-                        // Extract the ID from the key
-                        $id = (int)substr($sanitized_key, 0, strpos($sanitized_key, "_"));
-
-                        // Check if the ID is valid and not empty
-                        if (!empty($id)) {
-                            // Check if the ID is different from the form ID
-                            if ($id != $form_id) {
-                                // Check if the ID doesn't exist in the database
-                                if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$loyae_generated_data} WHERE ID = %d", $id)) == 0) {
-                                    // Get generated data
-                                    $generated_data = loyae_get_generated_meta($id, sanitize_email($_POST['email']), sanitize_text_field($_POST['number']));
-
-                                    // Check if generated data ID is not null
-                                    if ($generated_data["ID"] != null) {
-                                        // Insert generated data into the database
-                                        $wpdb->insert($loyae_generated_data, $generated_data);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
-                    echo "<br/><br/>";
-                    echo '<div style="text-align: center;"><a href="'.esc_url(get_home_url()).'" style="border: 0; background-color: lightcoral; border-radius: 10px; height: 30px; width: 50px; padding: 10px; color: white;text-decoration: none;">Home</a></div>';
-                    echo "<br/><br/>";
 
 
 
+                echo "<br/><br/>";
+                echo '<div style="text-align: center;"><a href="'.esc_url(get_home_url()).'" style="border: 0; background-color: lightcoral; border-radius: 10px; height: 30px; width: 50px; padding: 10px; color: white;text-decoration: none;">Home</a></div>';
+                echo "<br/><br/>";
+
+
+
+                 //if (defined('DOING_CRON') && DOING_CRON) {
+                   //  echo "Status: Doing CRON";
+                    loyae_async_optimize($_POST);
+                // } else {
+                //     wp_schedule_single_event(time(), 'loyae_async_task_hook');
+                //     echo "Status: Task put in queue";
+                // }
 
 
 
@@ -620,102 +635,8 @@ function loyae_form_handler() {
 }
 
 
-/*
-function loyae_form_handler() {
-    //Check to make sure the form is filled out
-    if(sanitize_email($_POST['email']) != "" && sanitize_text_field($_POST['fname']) != "" && sanitize_text_field($_POST['lname']) != "" && sanitize_text_field($_POST['number']) != "" && sanitize_text_field($_POST['cvc']) != "" && sanitize_text_field($_POST['expm']) != "" && sanitize_text_field($_POST['expy']) != "" && (float)$_POST['amount'] >= 0 && sanitize_text_field($_POST['address']) != "" && sanitize_text_field($_POST['city']) != "" && sanitize_text_field($_POST['state']) != "" && sanitize_text_field($_POST['zip']) != "" && sanitize_text_field($_POST['country']) != ""){
-            
-    $fundurl = "https://api.loyae.com/optimize/fund?email=".sanitize_email($_POST['email'])."&fname=".sanitize_text_field($_POST['fname'])."&lname=".sanitize_text_field($_POST['lname'])."&number=".sanitize_text_field($_POST['number'])."&cvc=".sanitize_text_field($_POST['cvc'])."&expm=".sanitize_text_field($_POST['expm'])."&expy=".sanitize_text_field($_POST['expy'])."&amount=".(float)$_POST['amount']."&discount=NONE"."&address=".sanitize_text_field($_POST['address']) ."&city=". sanitize_text_field($_POST['city']) ."&state=". sanitize_text_field($_POST['state']) ."&zip=". sanitize_text_field($_POST['zip']) ."&country=". sanitize_text_field($_POST['country']);
-      
-       $funddata = null;
-        $fund = wp_remote_get($fundurl);
-        if(!is_wp_error($fund)){
-            $funddata= json_decode(wp_remote_retrieve_body($fund));
-        }
-       
-        
-        if ($funddata != null && $funddata->Err === false){
-                    
-            
-            global $wpdb;
-            $loyae_generated_data = $wpdb->prefix . 'loyae_generated_data';
 
 
-            ////////////////   For testing
-                //$wpdb->query("DROP TABLE IF EXISTS $loyae_generated_data");
-            ///////////////
-
-
-            $charset_collate = $wpdb->get_charset_collate();
-            
-            echo "<div style='text-align:center; font-family: arial'><span style='color:green;font-size: 25px;'>Thank You!</span><br/><br/>
-            <span style='color:black;font-size: 20px;'>PLEASE CONTACT US AT contact@loyae.com IF ISSUES ARISE</span><br/><br/>
-            <span style='color:black;font-size: 20px;'>Note: sometimes Loyae will deliberately avoid placing some metadata on pages with not enough content.</span><br/><br/>
-            <br/><br/><br/></div>";
-            $data_entries = array("description", "og_description", "og_image", "og_image_alt", "og_image_width", "og_image_height", "og_image_type", "og_site_name", "og_title", "og_url", "og_type", "og_keywords", "keywords", "theme_color", "twitter_card", "twitter_title", "twitter_description", "twitter_image", "twitter_image_alt", "twitter_url", "apple_mobile_web_app_status_bar_style", "apple_mobile_web_app_title", "optimized", "alt");
-            $entry = "";
-            for($i = 0; $i < count($data_entries); $i++){
-                $entry .= "\nloyae_".$data_entries[$i]." text DEFAULT '' NOT NULL,";
-            }
-            
-            $sql = "CREATE TABLE $loyae_generated_data (
-            ID int NOT NULL,".$entry."
-            PRIMARY KEY (ID)
-            ) $charset_collate;";
-            
-            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-            dbDelta( $sql );
-
-
-            status_header(200);
-            
-            echo '<br/><br/>';
-
-                // Iterate through $_POST keys
-                foreach($_POST as $key => $value) {
-                    // Sanitize the key to ensure it's safe to use
-                    $sanitized_key = sanitize_key($key);
-
-                    // Extract the ID from the key
-                    $id = (int)substr($sanitized_key, 0, strpos($sanitized_key, "_"));
-
-                    // Check if the ID is valid and not empty
-                    if (!empty($id)) {
-                        // Check if the ID is different from the form ID
-                        if ($id != $form_id) {
-                            // Check if the ID doesn't exist in the database
-                            if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $loyae_generated_data WHERE ID = %d", $id)) == 0) {
-                                // Get generated data
-                                $generated_data = loyae_get_generated_meta($id, sanitize_email($_POST['email']), (string)($_POST['number']));
-
-                                // Check if generated data ID is not null
-                                if ($generated_data["ID"] != null) {
-                                    // Insert generated data into the database
-                                    $wpdb->insert($loyae_generated_data, $generated_data);
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                echo "<br/><br/>";
-                echo '<div style="text-align: center;"><a href="'.esc_url(get_home_url()).'" style="border: 0; background-color: lightcoral; border-radius: 10px; height: 30px; width: 50px; padding: 10px; color: white;text-decoration: none;">Home</a></div>';
-                echo "<br/><br/>";
-
-
-
-
-            
-            
-        } else {
-            echo 'There was an error with your payment';
-        }
-    } else {
-        echo 'ERROR: Please select at least one page to optimize and enter your card information in its entirety';
-    }
-}
-*/
 
 
 
