@@ -843,7 +843,9 @@ function loyae_add_alt_text($post_content) {
         $loyae_alt = unserialize($meta->loyae_alt);
     }     
 
-
+    if (empty($post_content)) {
+        return $post_content; // Return the original content if it's empty
+    }
     
     $dom = new DOMDocument();
     libxml_use_internal_errors(true);
